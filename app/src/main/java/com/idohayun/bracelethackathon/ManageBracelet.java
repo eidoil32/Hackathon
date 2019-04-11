@@ -42,6 +42,7 @@ import java.util.Objects;
 public class ManageBracelet extends Fragment {
     private static final String TAG = "ManageBracelet";
     private List<String> data = new ArrayList<>();
+    private static Button btnSave, addNew;
 
     @Nullable
     @Override
@@ -51,8 +52,8 @@ public class ManageBracelet extends Fragment {
         ListView list = view.findViewById(R.id.list_of_parametres);
         GetInformationFromServer updateData = new GetInformationFromServer();
         updateData.getInfo(list,view.getContext());
-        Button btnSave = view.findViewById(R.id.btn_save_all_data);
-        Button addNew = view.findViewById(R.id.btn_add_new);
+        btnSave = view.findViewById(R.id.btn_save_all_data);
+        addNew = view.findViewById(R.id.btn_add_new);
 
         Map<String,String> basicData = new HashMap<>();
         if(getArguments() != null) {
@@ -146,8 +147,13 @@ public class ManageBracelet extends Fragment {
                 JSONObject obj = jsonArray.getJSONObject(i);
                 data.add(obj.getString(Integer.toString(i)));
             }
+
+            list.setVisibility(View.VISIBLE);
             AdapterParam adapter = new AdapterParam(context,R.layout.adapter_paramter,data);
             list.setAdapter(adapter);
+            btnSave.setVisibility(View.VISIBLE);
+            addNew.setVisibility(View.VISIBLE);
+
         }
 
         @Override

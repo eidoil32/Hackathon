@@ -13,4 +13,7 @@
     <string name="text_id">ID:</string>
     <string name="text_phone">Emergency Phone:</string>
     <string name="text_full_name">Full name:</string>
+    <string name="waiting_for_scanning_bracelet">Waiting for scanning bracelet</string>
+    <string name="user_not_found">User not found</string>
+    <string name="password_wrong">Password didn\'t match</string>
 </resources>

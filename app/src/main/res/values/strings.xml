@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BraceletHackathon</string>
+    <string name="login_page_btn_login">LOGIN</string>
+    <string name="login_welcome_text">WELCOME TO OUT APP</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

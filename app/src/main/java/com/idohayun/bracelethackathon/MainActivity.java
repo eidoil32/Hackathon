@@ -246,13 +246,15 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }else if(STATE== WRITE){
-               /* JSONObject object = new JSONObject();
+               JSONObject object = new JSONObject();
                 try {
-                    object.put(Const.ID_KEY, "938473849");
-
+                    object.put(Const.ID_KEY, "123456789");
+                    object.put(Const.NAME_KEY, "edan");
+                    object.put(Const.PHONE_KEY, "1234567890");
+                    nfcManager.write(object);
                 }catch (Exception e){
 
-                }*/
+                }
             }
         }
 

@@ -72,7 +72,7 @@ public class AdapterParam extends ArrayAdapter {
         });
         
 
-        return super.getView(position, convertView, parent);
+        return convertView;
     }
 
     private class ViewHolder {

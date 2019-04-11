@@ -12,6 +12,7 @@ import android.util.Printer;
 import org.json.JSONObject;
 
 public class NfcManager {
+    int encPrime0=1511,encPrime1=4007,encPrime2=1543;
     private  byte[] pass=new byte[]{(byte)0x65 ,(byte)0x64,(byte)0x61,(byte)0x6E};
     private  byte[] pack=new byte[]{(byte)0x55 ,(byte)0x44,(byte)0x33,(byte)0x22};
     private  int ID_MAX_SIZE=12;
@@ -40,25 +41,26 @@ public class NfcManager {
                 //protectChip(mul);
                 int i = 0;
                 for (int j; i < 3; i++) {
+
                     mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
-                            ,(ID.length>(i*4))?ID[i*4]:0
-                            ,(ID.length>(i*4)+1)?ID[(i*4)+1]:0
-                            ,(ID.length>(i*4)+2)?ID[(i*4)+2]:0
-                            ,(ID.length>(i*4)+3)?ID[(i*4)+3]:0});
+                            ,encriptor((ID.length>(i*4))  ?ID[i*4]    :0,i*4)
+                            ,encriptor((ID.length>(i*4)+1)?ID[(i*4)+1]:0,(i*4)+1)
+                            ,encriptor((ID.length>(i*4)+2)?ID[(i*4)+2]:0,(i*4)+2)
+                            ,encriptor((ID.length>(i*4)+3)?ID[(i*4)+3]:0,(i*4)+3)});
                 }
                 for (int j; i < 9; i++) {
                     mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
-                            ,(nameBuffer>(i*4)  )?fullName[(i*4)  -ID_MAX_SIZE]:0
-                            ,(nameBuffer>(i*4)+1)?fullName[(i*4)+1-ID_MAX_SIZE]:0
-                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
-                            ,(nameBuffer>(i*4)+3)?fullName[(i*4)+3-ID_MAX_SIZE]:0});
+                            ,encriptor((nameBuffer>(i*4)  )?fullName[(i*4)  -ID_MAX_SIZE]:0,(i*4)  )
+                            ,encriptor((nameBuffer>(i*4)+1)?fullName[(i*4)+1-ID_MAX_SIZE]:0,(i*4)+1)
+                            ,encriptor((nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0,(i*4)+2)
+                            ,encriptor((nameBuffer>(i*4)+3)?fullName[(i*4)+3-ID_MAX_SIZE]:0,(i*4)+3)});
                 }
                 for (int j; i < 12; i++) {
                     mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
-                            ,(phoneBuffer>(i*4)  )?phone[(i*4)  -NAME_MAX_SIZE]:0
-                            ,(phoneBuffer>(i*4)+1)?phone[(i*4)+1-NAME_MAX_SIZE]:0
-                            ,(phoneBuffer>(i*4)+2)?phone[(i*4)+2-NAME_MAX_SIZE]:0
-                            ,(phoneBuffer>(i*4)+3)?phone[(i*4)+3-NAME_MAX_SIZE]:0});                }
+                            ,encriptor((phoneBuffer>(i*4)  )?phone[(i*4)  -NAME_MAX_SIZE]:0,(i*4)  )
+                            ,encriptor((phoneBuffer>(i*4)+1)?phone[(i*4)+1-NAME_MAX_SIZE]:0,(i*4)+1)
+                            ,encriptor((phoneBuffer>(i*4)+2)?phone[(i*4)+2-NAME_MAX_SIZE]:0,(i*4)+2)
+                            ,encriptor((phoneBuffer>(i*4)+3)?phone[(i*4)+3-NAME_MAX_SIZE]:0,(i*4)+3)});                }
 
             } catch (Exception e) {
                 Log.d("NfcManager", "cant connect to nfc exeption is: " + e.getMessage());
@@ -77,9 +79,9 @@ public class NfcManager {
             byte[] byteFullName = mul.transceive(new byte[]{FAST_READ,(byte)(0x07),(byte)(0x0C)});
 
             byte[] byteENumber = mul.transceive(new byte[]{FAST_READ,(byte)0x0D,(byte)(0x10)});
-            String charID = parseByteToString(byteID);
-            String charFN = parseByteToString(byteFullName);
-            String charP = parseByteToString(byteENumber);
+            String charID = descriptor(byteID,0);
+            String charFN = descriptor(byteFullName,ID_MAX_SIZE);
+            String charP = descriptor(byteENumber,NAME_MAX_SIZE);
             dataJson.put(Const.ID_KEY,charID);
             dataJson.put(Const.NAME_KEY,charFN);
             dataJson.put(Const.PHONE_KEY,charP);
@@ -89,14 +91,7 @@ public class NfcManager {
         }
         return  dataJson;
     }
-    private String parseByteToString(byte[] bytes){
-        int i=0;
-        String text = new String();
-        while(bytes.length>0&&bytes.length>i&&bytes[i]!=0){
-            text+= (char)bytes[i++];
-        }
-        return  text;
-    }
+
     private void protectChip(MifareUltralight mul){
        try {
            response = mul.transceive(new byte[]{READ, 41});
@@ -128,4 +123,26 @@ public class NfcManager {
            Log.d("NfcManager","cant read nfc tag to check protection with error: "+e.getMessage());
        }
     }
+
+
+    byte encriptor(byte data,int i)
+    {
+
+        int priS = encPrime0*encPrime1*encPrime2;
+        data+=((priS/(10 * ((i%10) +1))) % 10);
+        return data;
+    }
+
+    String descriptor(byte[] data,int buffer){
+        int priS = encPrime0*encPrime1*encPrime2;
+        if(data.length<140) {
+            for(int i=0;i<data.length;i++)
+            {
+                data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
+            }
+        }
+        String stringData = new String(data);
+        return stringData;
+    }
+
 }

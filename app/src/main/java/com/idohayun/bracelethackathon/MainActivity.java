@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
     private  static int READ=0;
-    private  static int SAVE=1;
+    private  static int WRITE =1;
     private  int STATE=0;
 
     private String dataSting;
@@ -56,8 +57,14 @@ public class MainActivity extends AppCompatActivity {
         if(tag!=null) {
             if (STATE == READ) {
                 nfcManager.read();
-            }else if(STATE==SAVE){
+            }else if(STATE== WRITE){
+               /* JSONObject object = new JSONObject();
+                try {
+                    object.put(Const.ID_KEY, "938473849");
 
+                }catch (Exception e){
+
+                }*/
             }
         }
 

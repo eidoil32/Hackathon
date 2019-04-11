@@ -17,4 +17,6 @@
     <string name="user_not_found">User not found</string>
     <string name="password_wrong">Password didn\'t match</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="user_dosent_exist">bracelet Identifier does not exist</string>
+    <string name="yes_button">Yes</string>
 </resources>

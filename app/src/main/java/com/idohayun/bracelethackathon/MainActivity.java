@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                             new Response.ErrorListener() { // the error listener
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
+                                    Log.d(TAG, "onErrorResponse: " + error.getMessage());
                                     Toast.makeText(context, "Oops! Got error from server!", Toast.LENGTH_SHORT).show();
                                 }
                             });

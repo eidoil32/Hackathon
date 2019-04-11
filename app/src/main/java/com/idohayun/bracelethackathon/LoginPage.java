@@ -12,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ScanPage extends Fragment {
+public class LoginPage extends Fragment {
 
     public static boolean login_page_login_button(String name,String password)
     {
         return true;
     }
-    public static void Eror(Context context)
+    public static void ErrorToast(Context context)
     {
         Toast.makeText(context,"wrong password or username", Toast.LENGTH_LONG).show();
     }
@@ -36,10 +36,10 @@ public class ScanPage extends Fragment {
         EditText username=(EditText)view.findViewById(R.id.login_page_user_name);
         EditText userPassword=(EditText)view.findViewById(R.id.login_page_user_name);
         if(username==null||userPassword==null)
-            Eror(view.getContext());
+            ErrorToast(view.getContext());
         if(!(login_page_login_button(username.getText().toString(),userPassword.getText().toString())));
         {
-            Eror(view.getContext());
+            ErrorToast(view.getContext());
         }
 
         return view;

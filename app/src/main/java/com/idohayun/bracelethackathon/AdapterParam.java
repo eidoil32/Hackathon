@@ -1,14 +1,14 @@
 package com.idohayun.bracelethackathon;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterParam extends ArrayAdapter {
@@ -16,6 +16,7 @@ public class AdapterParam extends ArrayAdapter {
     private final int layoutResource;
     private final LayoutInflater layoutInflater;
     private Context context;
+    private static final String TAG = "AdapterParam";
 
     public AdapterParam(Context context, int resource, List<String> data) {
         super(context, resource);
@@ -55,15 +56,33 @@ public class AdapterParam extends ArrayAdapter {
                 }
             }
         });
+        
+        viewHolder.moreImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: more description");
+            }
+        });
+        
+        viewHolder.delImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: delete this...");
+            }
+        });
+        
 
         return super.getView(position, convertView, parent);
     }
 
     private class ViewHolder {
-        final EditText description;
+        final TextView description;
+        final ImageView delImage, moreImage;
 
         ViewHolder(View view) {
-            this.description = view.findViewById(R.id.adapter_edit_text_parm);
+            this.delImage = view.findViewById(R.id.image_delete_btn);
+            this.moreImage = view.findViewById(R.id.image_more_description);
+            this.description = view.findViewById(R.id.text_name_disease);
         }
     }
 }

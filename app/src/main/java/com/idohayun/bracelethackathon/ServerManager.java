@@ -1,5 +1,6 @@
 package com.idohayun.bracelethackathon;
 
-public class ServerManager {
-    public static String information = "";
+class ServerManager {
+    static String information = "";
+    static String UpdatePersonData = "";
 }

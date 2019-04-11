@@ -8,4 +8,9 @@
     <string name="scan_page_btn_scan_again">Scan Again</string>
     <string name="btn_back">BACK</string>
     <string name="btn_save">SAVE</string>
+    <string name="btn_add_new">Add New</string>
+    <string name="text_mng_bracelet">Name:</string>
+    <string name="text_id">ID:</string>
+    <string name="text_phone">Emergency Phone:</string>
+    <string name="text_full_name">Full name:</string>
 </resources>

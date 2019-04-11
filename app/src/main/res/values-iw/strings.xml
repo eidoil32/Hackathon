@@ -15,4 +15,5 @@
     <string name="waiting_for_scanning_bracelet">Waiting for scanning bracelet</string>
     <string name="user_not_found">User not found</string>
     <string name="password_wrong">Password didn\'t match</string>
+    <string name="unknown_error">Unknown Error</string>
 </resources>

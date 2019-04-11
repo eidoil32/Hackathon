@@ -1,12 +1,15 @@
 package com.idohayun.bracelethackathon;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.util.List;
@@ -60,6 +63,7 @@ public class AdapterParam extends ArrayAdapter {
         viewHolder.moreImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                displayPopupWindow(v);
                 Log.d(TAG, "onClick: more description");
             }
         });
@@ -73,6 +77,21 @@ public class AdapterParam extends ArrayAdapter {
         
 
         return convertView;
+    }
+
+    private void displayPopupWindow(View anchorView) {
+        PopupWindow popup = new PopupWindow(context);
+        View layout = layoutInflater.inflate(R.layout.more_details, null);
+        popup.setContentView(layout);
+        // Set content width and height
+        popup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popup.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        // Closes the popup window when touch outside of it - when looses focus
+        popup.setOutsideTouchable(true);
+        popup.setFocusable(true);
+        // Show anchored to button
+        //popup.setBackgroundDrawable(new BitmapDrawable(context.getResources(),));
+        popup.showAsDropDown(anchorView);
     }
 
     private class ViewHolder {

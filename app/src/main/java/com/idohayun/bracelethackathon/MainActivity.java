@@ -37,11 +37,18 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static int READ = 0;
     private static int WRITE = 1;
-    private int STATE = -1;
+    private static int STATE = -1;
+    private TextView mainText;
+    private EditText userPassword;
+    private ManageBracelet manageBracelet = new ManageBracelet();
 
     private String dataSting;
     NfcManager nfcManager;
     NfcAdapter nfcAdapter;
+
+    public static void setSTATE(int input) {
+        STATE = input;
+    }
 
     public static void ErrorToast(Context context) {
         Toast.makeText(context, "wrong password or username", Toast.LENGTH_LONG).show();
@@ -55,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
         nfcManager = new NfcManager();
 
         final EditText username = findViewById(R.id.login_page_user_name);
-        final EditText userPassword = findViewById(R.id.login_page_password);
-        final TextView mainText = findViewById(R.id.login_page_welcome_text);
+        userPassword = findViewById(R.id.login_page_password);
+        mainText = findViewById(R.id.login_page_welcome_text);
         final Context context = this;
         final ImageView waiting = findViewById(R.id.image_animation_wating_for_device);
         final DataBaseManager db = new DataBaseManager(context);
@@ -89,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
-            Tender user = new Tender(i_id,s_username,s_password,e_permissions);
+            Tender user = new Tender(i_id, s_username, s_password, e_permissions);
             STATE = 0;
             username.setVisibility(View.INVISIBLE);
             userPassword.setVisibility(View.INVISIBLE);
@@ -158,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
                                                     break;
                                             }
 
-                                            Tender user = new Tender(i_id,s_username, s_password,e_permissions);
-                                            if(db.addData(user)) {
+                                            Tender user = new Tender(i_id, s_username, s_password, e_permissions);
+                                            if (db.addData(user)) {
                                                 Log.d(TAG, "onResponse: success");
                                             } else {
                                                 Log.d(TAG, "onResponse: failed");
@@ -224,10 +231,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        Tag tag =intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         nfcManager.connect(tag);
 
-        if(tag!=null) {
+        if (tag != null) {
             if (STATE == READ) {
                 JSONObject object = nfcManager.read();
                 Bundle bundle = new Bundle();
@@ -239,22 +246,24 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if(!bundle.isEmpty()) {
-                    ManageBracelet manageBracelet = new ManageBracelet();
+                if (!bundle.isEmpty()) {
                     manageBracelet.setArguments(bundle);
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.fragment_window, manageBracelet, "ManageBracelet").addToBackStack("ManageBracelet").commit();
-
                 }
-            }else if(STATE== WRITE){
-               JSONObject object = new JSONObject();
+            } else if (STATE == WRITE) {
+                JSONObject object = new JSONObject();
                 try {
-                    object.put(Const.ID_KEY, "123456789");
-                    object.put(Const.NAME_KEY, "edan");
-                    object.put(Const.EMREGNCY_PHONE_KEY, "1234567890");
-                    nfcManager.write(object);
-                }catch (Exception e){
-
+                    Bundle bundle = manageBracelet.getArguments();
+                    if(bundle != null) {
+                        Log.d(TAG, "onNewIntent: here!" + bundle.getString(Const.NAME_KEY));
+                        object.put(Const.ID_KEY, bundle.getString(Const.ID_KEY));
+                        object.put(Const.NAME_KEY, bundle.getString(Const.NAME_KEY));
+                        object.put(Const.EMREGNCY_PHONE_KEY, bundle.getString(Const.EMREGNCY_PHONE_KEY));
+                        nfcManager.write(object);
+                    }
+                } catch (Exception e) {
+                    mainText.setText(getString(R.string.waiting_for_scanning_bracelet));
                 }
             }
         }

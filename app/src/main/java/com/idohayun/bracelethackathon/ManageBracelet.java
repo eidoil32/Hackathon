@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +49,8 @@ public class ManageBracelet extends Fragment {
     private Map<String,String> basicData = new HashMap<>();
     private StringBuilder sb = new StringBuilder();
     private EditText editTextFullName, editTextPhoneNumber,textViewID;
+    private Patient patient;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -81,6 +85,15 @@ public class ManageBracelet extends Fragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //updateDataToServer(data,getContext());
+                Bundle bundle = new Bundle();
+
+                bundle.putString(Const.ID_KEY,patient.getId());
+                bundle.putString(Const.NAME_KEY,patient.getFullName());
+                bundle.putString(Const.EMREGNCY_PHONE_KEY,patient.getPhone());
+                setArguments(bundle);
+                Log.d(TAG, "onClick: here!");
+                MainActivity.setSTATE(1);
                 if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
                     updateDataToServer(data, getContext());
                     btnSave.setVisibility(v.VISIBLE);
@@ -98,7 +111,7 @@ public class ManageBracelet extends Fragment {
         Map<String, String> map = new HashMap<>();
         String id = basicData.get(Const.ID_KEY);
         if(id != null) {
-            map.put("textViewID", id);
+            map.put("ID", id);
         } else {
             return;
         }
@@ -113,7 +126,7 @@ public class ManageBracelet extends Fragment {
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "onResponse: " + response.toString());
                         try {
-                            if(false) {
+                            if(response.getString("user").equals("exist")) {
                                 data.clear();
                                 String s = response.getString("data");
                                 Log.d(TAG, "onResponse: " + s);
@@ -135,15 +148,15 @@ public class ManageBracelet extends Fragment {
                                 builder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                            textViewID.setEnabled(true);
-                                            textViewID.setText("");
-                                            editTextFullName.setText("");
-                                            editTextPhoneNumber.setText("");
-                                            btnSave.setVisibility(View.VISIBLE);
+                                        textViewID.setEnabled(true);
+                                        textViewID.setText("");
+                                        editTextFullName.setText("");
+                                        editTextPhoneNumber.setText("");
+                                        btnSave.setVisibility(View.VISIBLE);
 
                                     }
                                 });
-
+                                Log.d(TAG, "onResponse: user doesn't exist!");
 
                             }
                         } catch (JSONException e) {

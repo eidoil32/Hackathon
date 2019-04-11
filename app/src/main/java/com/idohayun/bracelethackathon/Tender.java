@@ -6,7 +6,7 @@ public class Tender {
     String password;
     enum permissions
     {
-        Doctor,Paramedic
+        Doctor,Paramedic;
     }
 
 }

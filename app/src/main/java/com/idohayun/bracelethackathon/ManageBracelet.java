@@ -66,8 +66,7 @@ public class ManageBracelet extends Fragment {
         addNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> empty = new ArrayList<>();
-                EditDisease editDisease = new EditDisease(empty);
+                EditDisease editDisease = new EditDisease(patient,list);
                 Intent intent = new Intent(context,editDisease.getClass());
                 startActivity(intent);
             }
@@ -85,6 +84,7 @@ public class ManageBracelet extends Fragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
                 //updateDataToServer(data,getContext());
                 Bundle bundle = new Bundle();
 
@@ -94,7 +94,6 @@ public class ManageBracelet extends Fragment {
                 setArguments(bundle);
                 Log.d(TAG, "onClick: here!");
                 MainActivity.setSTATE(1);
-                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
                     updateDataToServer(data, getContext());
                     btnSave.setVisibility(v.VISIBLE);
                 }else {

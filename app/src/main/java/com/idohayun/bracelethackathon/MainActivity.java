@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     object.put(Const.ID_KEY, "123456789");
                     object.put(Const.NAME_KEY, "edan");
-                    object.put(Const.PHONE_KEY, "1234567890");
+                    object.put(Const.EMREGNCY_PHONE_KEY, "1234567890");
                     nfcManager.write(object);
                 }catch (Exception e){
 

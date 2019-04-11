@@ -31,7 +31,7 @@ public class NfcManager {
         try {
             byte[] ID = object.getString(Const.ID_KEY).getBytes();
             byte[] fullName = object.getString(Const.NAME_KEY).getBytes();
-            byte[] phone = object.getString(Const.PHONE_KEY).getBytes();
+            byte[] phone = object.getString(Const.EMREGNCY_PHONE_KEY).getBytes();
             int idBuffer = ID_MAX_SIZE;
             int nameBuffer=fullName.length+ID_MAX_SIZE;
             int phoneBuffer=phone.length+NAME_MAX_SIZE;
@@ -49,8 +49,8 @@ public class NfcManager {
                 for (int j; i < 9; i++) {
                     mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
                             ,(nameBuffer>(i*4)  )?fullName[(i*4)  -ID_MAX_SIZE]:0
-                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
                             ,(nameBuffer>(i*4)+1)?fullName[(i*4)+1-ID_MAX_SIZE]:0
+                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
                             ,(nameBuffer>(i*4)+3)?fullName[(i*4)+3-ID_MAX_SIZE]:0});
                 }
                 for (int j; i < 12; i++) {
@@ -82,7 +82,7 @@ public class NfcManager {
             String charP = parseByteToString(byteENumber);
             dataJson.put(Const.ID_KEY,charID);
             dataJson.put(Const.NAME_KEY,charFN);
-            dataJson.put(Const.PHONE_KEY,charP);
+            dataJson.put(Const.EMREGNCY_PHONE_KEY,charP);
             return dataJson;
         }catch (Exception e){
             Log.d("NfcManager","cant connect to nfc exeption is: "+e.getMessage());

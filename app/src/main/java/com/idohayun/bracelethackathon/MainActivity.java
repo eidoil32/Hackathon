@@ -1,26 +1,28 @@
 package com.idohayun.bracelethackathon;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+public class MainActivity {
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    private static int READ = 0;
-    private static int SAVE = 1;
-    private int STATE = -1;
-
-    private String dataSting;
-    NfcManager nfcManager;
-    NfcAdapter nfcAdapter;
-
-    public static void ErrorToast(Context context) {
-        Toast.makeText(context, "wrong password or username", Toast.LENGTH_LONG).show();
+    int encPrime0=541,encPrime1=523,encPrime2=521;
+    byte[] encriptor(String data)
+    {
+        byte[] dataByte = data.getBytes();
+        int priS = encPrime0*encPrime1*encPrime2;
+        if(dataByte.length<140){
+            for(int i=0;i<dataByte.length;i++){
+                dataByte[i]+=((priS/10 - ((i%10) +1)) % 10);
+            }
+        }
+        return dataByte;
     }
-
- //my name is haim
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    String descriptor(byte[] data){
+        int priS = encPrime0*encPrime1*encPrime2;
+        if(data.length<140) {
+            for(int i=0;i<data.length;i++)
+            {
+                data[i] -= (priS/10*((i%10)+1))%10;
+            }
+        }
+        String stringData = new String(data);
+        return stringData;
     }
 }

@@ -15,8 +15,8 @@ public class NfcManager {
     private  byte[] pass=new byte[]{(byte)0x65 ,(byte)0x64,(byte)0x61,(byte)0x6E};
     private  byte[] pack=new byte[]{(byte)0x55 ,(byte)0x44,(byte)0x33,(byte)0x22};
     private  int ID_MAX_SIZE=12;
-    private  int NAME_MAX_SIZE=24;
-    private  int PHONE_MAX_SIZE=12;
+    private  int NAME_MAX_SIZE=24+ID_MAX_SIZE;
+    private  int PHONE_MAX_SIZE=12+NAME_MAX_SIZE;
     private  byte WRITE=(byte)0xA2;
     private  byte READ=(byte)0x30;
     private  byte FAST_READ=(byte)0x3A;
@@ -32,19 +32,33 @@ public class NfcManager {
             byte[] ID = object.getString(Const.ID_KEY).getBytes();
             byte[] fullName = object.getString(Const.NAME_KEY).getBytes();
             byte[] phone = object.getString(Const.PHONE_KEY).getBytes();
-
+            int idBuffer = ID_MAX_SIZE;
+            int nameBuffer=fullName.length+ID_MAX_SIZE;
+            int phoneBuffer=phone.length+NAME_MAX_SIZE;
             try {
                 mul.connect();
                 //protectChip(mul);
                 int i = 0;
                 for (int j; i < 3; i++) {
-                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i), (ID_MAX_SIZE>(i*4))?ID[i*4]:0,(ID_MAX_SIZE>(i*4)+1)?ID[(i*4)+1]:0,(ID_MAX_SIZE>(i*4)+2)?ID[(i*4)+2]:0,(ID_MAX_SIZE>(i*4)+3)?ID[(i*4)+3]:0});
+                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
+                            ,(ID.length>(i*4))?ID[i*4]:0
+                            ,(ID.length>(i*4)+1)?ID[(i*4)+1]:0
+                            ,(ID.length>(i*4)+2)?ID[(i*4)+2]:0
+                            ,(ID.length>(i*4)+3)?ID[(i*4)+3]:0});
                 }
-                for (int j; i < 6; i++) {
-                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i), (NAME_MAX_SIZE>(i*4))?fullName[i*4]:0,(NAME_MAX_SIZE>(i*4)+1)?fullName[(i*4)+1]:0,(NAME_MAX_SIZE>(i*4)+2)?fullName[(i*4)+2]:0,(NAME_MAX_SIZE>(i*4)+3)?fullName[(i*4)+3]:0});
+                for (int j; i < 9; i++) {
+                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
+                            ,(nameBuffer>(i*4)  )?fullName[(i*4)  -ID_MAX_SIZE]:0
+                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
+                            ,(nameBuffer>(i*4)+1)?fullName[(i*4)+1-ID_MAX_SIZE]:0
+                            ,(nameBuffer>(i*4)+3)?fullName[(i*4)+3-ID_MAX_SIZE]:0});
                 }
-                for (int j; i < 3; i++) {
-                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i), (PHONE_MAX_SIZE>(i*4))?phone[i*4]:0,(PHONE_MAX_SIZE>(i*4)+1)?phone[(i*4)+1]:0,(PHONE_MAX_SIZE>(i*4)+2)?phone[(i*4)+2]:0,(PHONE_MAX_SIZE>(i*4)+3)?phone[(i*4)+3]:0});                }
+                for (int j; i < 12; i++) {
+                    mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
+                            ,(phoneBuffer>(i*4)  )?phone[(i*4)  -NAME_MAX_SIZE]:0
+                            ,(phoneBuffer>(i*4)+1)?phone[(i*4)+1-NAME_MAX_SIZE]:0
+                            ,(phoneBuffer>(i*4)+2)?phone[(i*4)+2-NAME_MAX_SIZE]:0
+                            ,(phoneBuffer>(i*4)+3)?phone[(i*4)+3-NAME_MAX_SIZE]:0});                }
 
             } catch (Exception e) {
                 Log.d("NfcManager", "cant connect to nfc exeption is: " + e.getMessage());

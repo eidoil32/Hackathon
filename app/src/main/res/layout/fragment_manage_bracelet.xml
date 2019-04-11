@@ -70,11 +70,12 @@
             app:layout_constraintStart_toEndOf="@+id/manage_bracelet_back_btn"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <EditText
             android:id="@+id/text_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:editable="false"
             app:layout_constraintBaseline_toBaselineOf="@+id/text_id_0"
             app:layout_constraintStart_toEndOf="@+id/text_id_0"
             tools:text="204062574" />

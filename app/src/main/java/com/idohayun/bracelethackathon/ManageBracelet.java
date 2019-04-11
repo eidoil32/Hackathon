@@ -1,7 +1,10 @@
 package com.idohayun.bracelethackathon;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,6 +48,7 @@ public class ManageBracelet extends Fragment {
     private Context context;
     private Map<String,String> basicData = new HashMap<>();
     private StringBuilder sb = new StringBuilder();
+    private EditText editTextFullName, editTextPhoneNumber,textViewID;
     private Patient patient;
 
     @Nullable
@@ -55,7 +60,18 @@ public class ManageBracelet extends Fragment {
         list = view.findViewById(R.id.list_of_parametres);
         btnSave = view.findViewById(R.id.btn_save_all_data);
         addNew = view.findViewById(R.id.float_add_btn);
-
+        editTextFullName = view.findViewById(R.id.edit_text_full_name);
+        editTextPhoneNumber = view.findViewById(R.id.edit_text_phone);
+        textViewID = view.findViewById(R.id.text_id);
+        addNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> empty = new ArrayList<>();
+                EditDisease editDisease = new EditDisease(empty);
+                Intent intent = new Intent(context,editDisease.getClass());
+                startActivity(intent);
+            }
+        });
 
         if(getArguments() != null) {
             basicData.put(Const.ID_KEY, Objects.requireNonNull(getArguments().getString(Const.ID_KEY)));
@@ -64,18 +80,7 @@ public class ManageBracelet extends Fragment {
             Log.d(TAG, "onCreateView: " + basicData.get(Const.ID_KEY) + basicData.get(Const.NAME_KEY) + basicData.get(Const.EMREGNCY_PHONE_KEY));
             updateListOfData();
             getUserBasicData(view,basicData);
-            patient = new Patient(basicData.get(Const.NAME_KEY),basicData.get(Const.ID_KEY),basicData.get(Const.EMREGNCY_PHONE_KEY));
-            patient.setDiseases(data);
         }
-
-        addNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditDisease editDisease = new EditDisease(patient,list);
-                Intent intent = new Intent(context,editDisease.getClass());
-                startActivity(intent);
-            }
-        });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +94,12 @@ public class ManageBracelet extends Fragment {
                 setArguments(bundle);
                 Log.d(TAG, "onClick: here!");
                 MainActivity.setSTATE(1);
+                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
+                    updateDataToServer(data, getContext());
+                    btnSave.setVisibility(v.VISIBLE);
+                }else {
+
+                }
             }
         });
 
@@ -130,7 +141,20 @@ public class ManageBracelet extends Fragment {
                                 list.setVisibility(View.VISIBLE);
                                 list.setAdapter(datesListAdapter);
                             } else {
-                                //TODO:: kantor
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setMessage(getString(R.string.user_dosent_exist));
+                                builder.setCancelable(false);
+                                builder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        textViewID.setEnabled(true);
+                                        textViewID.setText("");
+                                        editTextFullName.setText("");
+                                        editTextPhoneNumber.setText("");
+                                        btnSave.setVisibility(View.VISIBLE);
+
+                                    }
+                                });
                                 Log.d(TAG, "onResponse: user doesn't exist!");
                                 btnSave.setVisibility(View.VISIBLE);
                                 addNew.setVisibility(View.INVISIBLE);
@@ -151,16 +175,13 @@ public class ManageBracelet extends Fragment {
     }
 
     private void getUserBasicData(final View view, Map<String,String> basicData) {
-        EditText fullName, phoneNumber;
-        TextView ID;
 
-        fullName = view.findViewById(R.id.edit_text_full_name);
-        phoneNumber = view.findViewById(R.id.edit_text_phone);
-        ID = view.findViewById(R.id.text_id);
 
-        fullName.setText(basicData.get(Const.NAME_KEY));
-        phoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));
-        ID.setText(basicData.get(Const.ID_KEY));
+
+
+        editTextFullName.setText(basicData.get(Const.NAME_KEY));
+        editTextPhoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));
+        textViewID.setText(basicData.get(Const.ID_KEY));
     }
 
     private void updateDataToServer(List<String> data, final Context context) {

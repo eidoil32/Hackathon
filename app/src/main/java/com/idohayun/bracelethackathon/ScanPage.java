@@ -16,7 +16,7 @@ public class ScanPage extends Fragment {
 
     public static boolean login_page_login_button(String name,String password)
     {
-        return true;
+       return userExistance(name,password);
     }
     public static void Eror(Context context)
     {

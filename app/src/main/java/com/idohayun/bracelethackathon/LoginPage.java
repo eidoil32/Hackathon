@@ -16,7 +16,7 @@ public class LoginPage extends Fragment {
 
     public static boolean login_page_login_button(String name,String password)
     {
-        return true;
+       return userExistance(name,password);
     }
     public static void ErrorToast(Context context)
     {

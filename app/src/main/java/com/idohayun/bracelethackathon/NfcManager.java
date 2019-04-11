@@ -138,7 +138,8 @@ public class NfcManager {
         if(data.length<140) {
             for(int i=0;i<data.length;i++)
             {
-                data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
+                if (data[i]!=0)
+                    data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
             }
         }
         String stringData = new String(data);

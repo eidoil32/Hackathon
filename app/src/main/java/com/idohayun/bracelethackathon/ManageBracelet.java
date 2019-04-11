@@ -128,6 +128,7 @@ public class ManageBracelet extends Fragment {
                                 list.setVisibility(View.VISIBLE);
                                 list.setAdapter(datesListAdapter);
                             }else{
+                                Log.d(TAG, "onResponse: ");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage(getString(R.string.user_dosent_exist));
                                 builder.setCancelable(false);

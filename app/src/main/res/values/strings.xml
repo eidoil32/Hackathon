@@ -5,4 +5,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="scan_page_btn_scan_again">Scan Again</string>
+    <string name="btn_back">BACK</string>
+    <string name="btn_save">SAVE</string>
 </resources>

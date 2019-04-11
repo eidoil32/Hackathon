@@ -73,10 +73,10 @@ public class NfcManager {
         try {
             mul.connect();
             //protectChip(mul);
-            byte[] byteID = mul.transceive(new byte[]{FAST_READ,(byte)0x04,(byte)(0x04+(0x03))});
-            byte[] byteFullName = mul.transceive(new byte[]{FAST_READ,(byte)(0x07),(byte)(0x07+(24/4))});
+            byte[] byteID = mul.transceive(new byte[]{FAST_READ,(byte)0x04,(byte)(0x04+(0x02))});
+            byte[] byteFullName = mul.transceive(new byte[]{FAST_READ,(byte)(0x07),(byte)(0x0C)});
 
-            byte[] byteENumber = mul.transceive(new byte[]{FAST_READ,(byte)0x0E,(byte)(0x11)});
+            byte[] byteENumber = mul.transceive(new byte[]{FAST_READ,(byte)0x0D,(byte)(0x10)});
             String charID = parseByteToString(byteID);
             String charFN = parseByteToString(byteFullName);
             String charP = parseByteToString(byteENumber);

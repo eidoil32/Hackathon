@@ -49,8 +49,8 @@ public class NfcManager {
                 for (int j; i < 9; i++) {
                     mul.transceive(new byte[]{WRITE, (byte) (0x04 + i)
                             ,(nameBuffer>(i*4)  )?fullName[(i*4)  -ID_MAX_SIZE]:0
-                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
                             ,(nameBuffer>(i*4)+1)?fullName[(i*4)+1-ID_MAX_SIZE]:0
+                            ,(nameBuffer>(i*4)+2)?fullName[(i*4)+2-ID_MAX_SIZE]:0
                             ,(nameBuffer>(i*4)+3)?fullName[(i*4)+3-ID_MAX_SIZE]:0});
                 }
                 for (int j; i < 12; i++) {

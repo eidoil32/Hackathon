@@ -1,22 +1,9 @@
 package com.idohayun.bracelethackathon;
 
 public class Tender {
-    int id;
     String name;
     String password;
-    enum Permissions
-    {
-        Doctor,Paramedic;
-    }
-    Permissions permission;
-
-    public Permissions getPermission() {
-        return permission;
-    }
-
-    public void setPermission(Permissions permission) {
-        this.permission = permission;
-    }
+    int id;
 
     public int getId() {
         return id;
@@ -24,6 +11,27 @@ public class Tender {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    enum Permissions {
+        Magen_David_Adom, Doctor, volunteer;
+    }
+
+    Permissions permission;
+
+    public Tender(int id, String name, String password, Permissions permission) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.permission = permission;
+    }
+
+    public Permissions getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permissions permission) {
+        this.permission = permission;
     }
 
     public String getName() {

@@ -2,7 +2,6 @@ package com.idohayun.bracelethackathon;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,6 +44,7 @@ public class ManageBracelet extends Fragment {
     private Context context;
     private Map<String,String> basicData = new HashMap<>();
     private StringBuilder sb = new StringBuilder();
+    private Patient patient;
 
     @Nullable
     @Override
@@ -57,15 +56,6 @@ public class ManageBracelet extends Fragment {
         btnSave = view.findViewById(R.id.btn_save_all_data);
         addNew = view.findViewById(R.id.float_add_btn);
 
-        addNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<String> empty = new ArrayList<>();
-                EditDisease editDisease = new EditDisease(empty);
-                Intent intent = new Intent(context,editDisease.getClass());
-                startActivity(intent);
-            }
-        });
 
         if(getArguments() != null) {
             basicData.put(Const.ID_KEY, Objects.requireNonNull(getArguments().getString(Const.ID_KEY)));
@@ -74,12 +64,31 @@ public class ManageBracelet extends Fragment {
             Log.d(TAG, "onCreateView: " + basicData.get(Const.ID_KEY) + basicData.get(Const.NAME_KEY) + basicData.get(Const.EMREGNCY_PHONE_KEY));
             updateListOfData();
             getUserBasicData(view,basicData);
+            patient = new Patient(basicData.get(Const.NAME_KEY),basicData.get(Const.ID_KEY),basicData.get(Const.EMREGNCY_PHONE_KEY));
+            patient.setDiseases(data);
         }
+
+        addNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditDisease editDisease = new EditDisease(patient,list);
+                Intent intent = new Intent(context,editDisease.getClass());
+                startActivity(intent);
+            }
+        });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateDataToServer(data,getContext());
+                //updateDataToServer(data,getContext());
+                Bundle bundle = new Bundle();
+
+                bundle.putString(Const.ID_KEY,patient.getId());
+                bundle.putString(Const.NAME_KEY,patient.getFullName());
+                bundle.putString(Const.EMREGNCY_PHONE_KEY,patient.getPhone());
+                setArguments(bundle);
+                Log.d(TAG, "onClick: here!");
+                MainActivity.setSTATE(1);
             }
         });
 
@@ -106,19 +115,26 @@ public class ManageBracelet extends Fragment {
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, "onResponse: " + response.toString());
                         try {
-                            data.clear();
-                            String s = response.getString("data");
-                            Log.d(TAG, "onResponse: " + s);
-                            JSONArray jsonArray = new JSONArray(s);
-                            Log.d(TAG, "onResponse: " + jsonArray.toString());
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject obj = jsonArray.getJSONObject(i);
-                                data.add(obj.getString("Name"));
-                                Log.d(TAG, "onResponse: " + obj.toString());
+                            if(response.getString("user").equals("exist")) {
+                                data.clear();
+                                String s = response.getString("data");
+                                Log.d(TAG, "onResponse: " + s);
+                                JSONArray jsonArray = new JSONArray(s);
+                                Log.d(TAG, "onResponse: " + jsonArray.toString());
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject obj = jsonArray.getJSONObject(i);
+                                    data.add(obj.getString("Name"));
+                                    Log.d(TAG, "onResponse: " + obj.toString());
+                                }
+                                AdapterParam datesListAdapter = new AdapterParam(context, R.layout.adapter_paramter, data);
+                                list.setVisibility(View.VISIBLE);
+                                list.setAdapter(datesListAdapter);
+                            } else {
+                                //TODO:: kantor
+                                Log.d(TAG, "onResponse: user doesn't exist!");
+                                btnSave.setVisibility(View.VISIBLE);
+                                addNew.setVisibility(View.INVISIBLE);
                             }
-                            AdapterParam datesListAdapter = new AdapterParam(context, R.layout.adapter_paramter, data);
-                            list.setVisibility(View.VISIBLE);
-                            list.setAdapter(datesListAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

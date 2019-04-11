@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".scan_page">
+    tools:context=".ScanPage">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,17 +28,17 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_begin="79dp" />
 
-        <Button
-            android:id="@+id/scan_page_btn_scan_agin"
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/scan_page_btn_scan_again"
-            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scan_page_main_text" />
+            app:layout_constraintTop_toBottomOf="@+id/scan_page_main_text"
+            tools:src="@tools:sample/avatars[5]" />
+
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

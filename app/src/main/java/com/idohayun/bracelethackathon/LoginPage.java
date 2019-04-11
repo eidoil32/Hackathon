@@ -14,13 +14,12 @@ import android.widget.Toast;
 
 public class LoginPage extends Fragment {
 
-    public static boolean login_page_login_button(String name,String password)
-    {
-       return userExistance(name,password);
+    public static boolean login_page_login_button(String name, String password) {
+        return userExists(name, password);
     }
-    public static void ErrorToast(Context context)
-    {
-        Toast.makeText(context,"wrong password or username", Toast.LENGTH_LONG).show();
+
+    public static void ErrorToast(Context context) {
+        Toast.makeText(context, "wrong password or username", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -32,13 +31,15 @@ public class LoginPage extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.login_screen,container,false);
-        EditText username=(EditText)view.findViewById(R.id.login_page_user_name);
-        EditText userPassword=(EditText)view.findViewById(R.id.login_page_user_name);
-        if(username==null||userPassword==null)
+        View view = inflater.inflate(R.layout.login_screen, container, false);
+        EditText username = view.findViewById(R.id.login_page_user_name);
+        EditText userPassword = view.findViewById(R.id.login_page_password);
+        if (username == null || userPassword == null)
             ErrorToast(view.getContext());
-        if(!(login_page_login_button(username.getText().toString(),userPassword.getText().toString())));
-        {
+
+        assert username != null;
+        assert userPassword != null;
+        if (!(login_page_login_button(username.getText().toString(), userPassword.getText().toString()))) {
             ErrorToast(view.getContext());
         }
 

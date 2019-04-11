@@ -43,10 +43,6 @@ public class ManageBracelet extends Fragment {
     private static final String TAG = "ManageBracelet";
     private List<String> data = new ArrayList<>();
 
-    public ManageBracelet() {
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

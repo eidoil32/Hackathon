@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -50,6 +47,7 @@ public class ManageBracelet extends Fragment {
     private StringBuilder sb = new StringBuilder();
     private EditText editTextFullName, editTextPhoneNumber,textViewID;
     private Patient patient;
+    private boolean user_doest_exist = false;
 
     @Nullable
     @Override
@@ -63,11 +61,11 @@ public class ManageBracelet extends Fragment {
         editTextFullName = view.findViewById(R.id.edit_text_full_name);
         editTextPhoneNumber = view.findViewById(R.id.edit_text_phone);
         textViewID = view.findViewById(R.id.text_id);
+
         addNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List<String> empty = new ArrayList<>();
-                EditDisease editDisease = new EditDisease(empty);
+                EditDisease editDisease = new EditDisease(patient,list);
                 Intent intent = new Intent(context,editDisease.getClass());
                 startActivity(intent);
             }
@@ -77,6 +75,8 @@ public class ManageBracelet extends Fragment {
             basicData.put(Const.ID_KEY, Objects.requireNonNull(getArguments().getString(Const.ID_KEY)));
             basicData.put(Const.NAME_KEY, Objects.requireNonNull(getArguments().getString(Const.NAME_KEY)));
             basicData.put(Const.EMREGNCY_PHONE_KEY, Objects.requireNonNull(getArguments().getString(Const.EMREGNCY_PHONE_KEY)));
+            String b_id = basicData.get(Const.ID_KEY), b_name = basicData.get(Const.NAME_KEY), b_phone = basicData.get(Const.EMREGNCY_PHONE_KEY);
+            patient = new Patient(b_name,b_id,b_phone);
             Log.d(TAG, "onCreateView: " + basicData.get(Const.ID_KEY) + basicData.get(Const.NAME_KEY) + basicData.get(Const.EMREGNCY_PHONE_KEY));
             updateListOfData();
             getUserBasicData(view,basicData);
@@ -86,24 +86,72 @@ public class ManageBracelet extends Fragment {
             @Override
             public void onClick(View v) {
                 //updateDataToServer(data,getContext());
-                Bundle bundle = new Bundle();
+                String t_ID, t_NAME, t_PHONE;
+                t_ID = textViewID.getText().toString();
+                t_NAME = editTextFullName.getText().toString();
+                t_PHONE = editTextPhoneNumber.getText().toString();
+                if(!t_ID.isEmpty() && !t_NAME.isEmpty() && !t_PHONE.isEmpty()) {
+                    Bundle bundle = new Bundle();
+                    patient.setFullName(t_NAME);
+                    patient.setPhone(t_PHONE);
+                    patient.setId(t_ID);
+                    bundle.putString(Const.ID_KEY, patient.getId());
+                    bundle.putString(Const.NAME_KEY, patient.getFullName());
+                    bundle.putString(Const.EMREGNCY_PHONE_KEY, patient.getPhone());
+                    setArguments(bundle);
+                    Log.d(TAG, "onClick: here!");
+                    MainActivity.setSTATE(1);
 
-                bundle.putString(Const.ID_KEY,patient.getId());
-                bundle.putString(Const.NAME_KEY,patient.getFullName());
-                bundle.putString(Const.EMREGNCY_PHONE_KEY,patient.getPhone());
-                setArguments(bundle);
-                Log.d(TAG, "onClick: here!");
-                MainActivity.setSTATE(1);
-                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
-                    updateDataToServer(data, getContext());
-                    btnSave.setVisibility(v.VISIBLE);
-                }else {
+                    if(user_doest_exist) {
+                        addNewUserToDB();
+                    } else {
+                        updateDataToServer(data, getContext());
+                    }
+                    btnSave.setVisibility(View.VISIBLE);
+                } else {
 
                 }
             }
         });
 
         return view;
+    }
+
+    private void addNewUserToDB() {
+        JsonObjectRequest request;
+        RequestQueue queue;
+        queue = Volley.newRequestQueue(context);
+        Log.d(TAG, "onClick: update data to server!");
+        Map<String,String> map = new HashMap<>();
+        map.put("FULLNAME",patient.getFullName());
+        map.put("PHONE",patient.getPhone());
+        map.put("ID",patient.getId());
+        final JSONObject jsonObject = new JSONObject(map);
+        request = new JsonObjectRequest(
+                Request.Method.POST, // the request method
+                ServerManager.AddNewUser, jsonObject,
+                new Response.Listener<JSONObject>() { // the response listener
+                    @Override
+                    public void onResponse(JSONObject response){
+                        try {
+                            if(response.getString("status").equals("true")) {
+                                Toast.makeText(context,"success!",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Log.d(TAG, "onResponse: failed adding new user");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() { // the error listener
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(),"Oops! Got error from server!",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        queue.add(request);
     }
 
     private void updateListOfData() {
@@ -141,6 +189,7 @@ public class ManageBracelet extends Fragment {
                                 list.setVisibility(View.VISIBLE);
                                 list.setAdapter(datesListAdapter);
                             } else {
+                                user_doest_exist = true;
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage(getString(R.string.user_dosent_exist));
                                 builder.setCancelable(false);
@@ -156,8 +205,6 @@ public class ManageBracelet extends Fragment {
                                     }
                                 });
                                 Log.d(TAG, "onResponse: user doesn't exist!");
-                                btnSave.setVisibility(View.VISIBLE);
-                                addNew.setVisibility(View.INVISIBLE);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -175,9 +222,6 @@ public class ManageBracelet extends Fragment {
     }
 
     private void getUserBasicData(final View view, Map<String,String> basicData) {
-
-
-
 
         editTextFullName.setText(basicData.get(Const.NAME_KEY));
         editTextPhoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));

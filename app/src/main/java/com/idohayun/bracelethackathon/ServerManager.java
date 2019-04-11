@@ -5,4 +5,5 @@ class ServerManager {
     static String UpdatePersonData = "";
     static String AddDiseaseToUser = "";
     static String UserLogin = "http://eidoil32.myhf.in/hackathon/user_login.php";
+    static String AddNewUser = "http://eidoil32.myhf.in/hackathon/addNewUser.php";
 }

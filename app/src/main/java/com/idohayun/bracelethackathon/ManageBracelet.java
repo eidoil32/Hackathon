@@ -1,6 +1,7 @@
 package com.idohayun.bracelethackathon;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +40,8 @@ import java.util.Objects;
 public class ManageBracelet extends Fragment {
     private static final String TAG = "ManageBracelet";
     private List<String> data = new ArrayList<>();
-    private Button btnSave, addNew;
+    private Button btnSave;
+    private ImageView addNew;
     private ListView list;
     private Context context;
     private Map<String,String> basicData = new HashMap<>();
@@ -51,7 +55,17 @@ public class ManageBracelet extends Fragment {
         context = view.getContext();
         list = view.findViewById(R.id.list_of_parametres);
         btnSave = view.findViewById(R.id.btn_save_all_data);
-        addNew = view.findViewById(R.id.btn_add_new);
+        addNew = view.findViewById(R.id.float_add_btn);
+
+        addNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> empty = new ArrayList<>();
+                EditDisease editDisease = new EditDisease(empty);
+                Intent intent = new Intent(context,editDisease.getClass());
+                startActivity(intent);
+            }
+        });
 
         if(getArguments() != null) {
             basicData.put(Const.ID_KEY, Objects.requireNonNull(getArguments().getString(Const.ID_KEY)));
@@ -61,13 +75,6 @@ public class ManageBracelet extends Fragment {
             updateListOfData();
             getUserBasicData(view,basicData);
         }
-
-        addNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: add new disease");
-            }
-        });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -32,7 +32,7 @@ public class NfcManager {
         try {
             byte[] ID = object.getString(Const.ID_KEY).getBytes();
             byte[] fullName = object.getString(Const.NAME_KEY).getBytes();
-            byte[] phone = object.getString(Const.PHONE_KEY).getBytes();
+            byte[] phone = object.getString(Const.EMREGNCY_PHONE_KEY).getBytes();
             int idBuffer = ID_MAX_SIZE;
             int nameBuffer=fullName.length+ID_MAX_SIZE;
             int phoneBuffer=phone.length+NAME_MAX_SIZE;
@@ -84,7 +84,7 @@ public class NfcManager {
             String charP = descriptor(byteENumber,NAME_MAX_SIZE);
             dataJson.put(Const.ID_KEY,charID);
             dataJson.put(Const.NAME_KEY,charFN);
-            dataJson.put(Const.PHONE_KEY,charP);
+            dataJson.put(Const.EMREGNCY_PHONE_KEY,charP);
             return dataJson;
         }catch (Exception e){
             Log.d("NfcManager","cant connect to nfc exeption is: "+e.getMessage());

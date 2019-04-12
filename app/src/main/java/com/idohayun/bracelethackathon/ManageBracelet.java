@@ -41,7 +41,7 @@ public class ManageBracelet extends Fragment {
     private List<String> data = new ArrayList<>();
     private Button btnSave, btnBack;
     private ImageView addNew;
-    private ListView list;
+    private static ListView list;
     private Context context;
     private Map<String,String> basicData = new HashMap<>();
     private StringBuilder sb = new StringBuilder();
@@ -53,17 +53,17 @@ public class ManageBracelet extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: in");
-        basicData.clear();
-        editTextFullName.getText().clear();
-        editTextPhoneNumber.getText().clear();
-        setArguments(null);
-
-        textViewID.getText().clear();
     }
+
+    public static ListView getListView() {
+        return list;
+    }
+
+
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_manage_bracelet,container,false);
         view.setBackgroundColor(getResources().getColor(R.color.backgroundWhite,null));
         context = view.getContext();
@@ -87,8 +87,19 @@ public class ManageBracelet extends Fragment {
         addNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditDisease editDisease = new EditDisease(patient,list);
-                Intent intent = new Intent(context,editDisease.getClass());
+                Intent intent = new Intent(context,EditDisease.class);
+                Bundle bundle = new Bundle();
+                ArrayList<String> arrayList;
+                if(patient.getDiseases() == null) {
+                    arrayList = new ArrayList<>();
+                } else {
+                    arrayList = new ArrayList<>(patient.getDiseases().size());
+                    arrayList.addAll(patient.getDiseases());
+                }
+                bundle.putSerializable("List",arrayList);
+                bundle.putString("ID",patient.getId());
+                intent.putExtra("bundle",bundle);
+
                 startActivity(intent);
             }
         });
@@ -120,6 +131,11 @@ public class ManageBracelet extends Fragment {
                             } else {
                                 updateDataToServer(data, getContext());
                             }
+
+                            patient = null;
+                            assert getFragmentManager() != null;
+                            getFragmentManager().popBackStack();
+                            MainActivity.setMainText("Wait for saving data");
                         } else {
                             Log.d(TAG, "onClick: input incorrect!");
                         }
@@ -210,7 +226,8 @@ public class ManageBracelet extends Fragment {
                                     data.add(obj.getString("Name"));
                                     Log.d(TAG, "onResponse: " + obj.toString());
                                 }
-                                AdapterParam datesListAdapter = new AdapterParam(context, R.layout.adapter_paramter, data);
+                                AdapterParam datesListAdapter = new AdapterParam(context, R.layout.adapter_paramter, data,Integer.parseInt(patient.getId()));
+                                patient.setDiseases(data);
                                 list.setVisibility(View.VISIBLE);
                                 btnSave.setVisibility(View.VISIBLE);
                                 list.setAdapter(datesListAdapter);
@@ -277,7 +294,16 @@ public class ManageBracelet extends Fragment {
 
     private void getUserBasicData(Map<String,String> basicData) {
         editTextFullName.setText(basicData.get(Const.NAME_KEY));
-        editTextPhoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));
+        StringBuilder stringBuilder = new StringBuilder();
+        String temp = basicData.get(Const.EMREGNCY_PHONE_KEY);
+        if(temp == null) {
+            editTextPhoneNumber.setText(temp);
+        } else {
+            for (int i = 0; i < temp.length() && i < 10; i++) {
+                stringBuilder.append(temp.charAt(i));
+            }
+        }
+        editTextPhoneNumber.setText(stringBuilder);
         textViewID.setText(basicData.get(Const.ID_KEY));
     }
 
@@ -287,9 +313,12 @@ public class ManageBracelet extends Fragment {
         queue = Volley.newRequestQueue(context);
         Log.d(TAG, "onClick: update data to server!");
         Map<String,String> map = new HashMap<>();
-        for (int i = 0 ; i < data.size(); i++) {
-            map.put(Integer.toString(i),data.get(0));
-        }
+        map.put("ID",patient.getId());
+        map.put("PHONE",patient.getPhone());
+        map.put("FULLNAME",patient.getFullName());
+//        for (int i = 0 ; i < data.size(); i++) {
+//            map.put("Name",data.get(i));
+//        }
         final JSONObject jsonObject = new JSONObject(map);
         request = new JsonObjectRequest(
                 Request.Method.POST, // the request method

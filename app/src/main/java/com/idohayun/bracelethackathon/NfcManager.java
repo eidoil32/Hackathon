@@ -8,6 +8,7 @@ import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 import android.util.Log;
 import android.util.Printer;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -61,6 +62,8 @@ public class NfcManager {
                             ,encriptor((phoneBuffer>(i*4)+1)?phone[(i*4)+1-NAME_MAX_SIZE]:0,(i*4)+1)
                             ,encriptor((phoneBuffer>(i*4)+2)?phone[(i*4)+2-NAME_MAX_SIZE]:0,(i*4)+2)
                             ,encriptor((phoneBuffer>(i*4)+3)?phone[(i*4)+3-NAME_MAX_SIZE]:0,(i*4)+3)});                }
+
+                MainActivity.setSTATE(0);
 
             } catch (Exception e) {
                 Log.d("NfcManager", "cant connect to nfc exeption is: " + e.getMessage());

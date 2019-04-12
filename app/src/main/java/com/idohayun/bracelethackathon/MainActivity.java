@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static int READ = 0;
     private static int WRITE = 1;
     private static int STATE = -1;
-    private TextView mainText;
+    private static TextView mainText;
     private EditText userPassword;
     private ManageBracelet manageBracelet = new ManageBracelet();
 
@@ -53,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static void ErrorToast(Context context) {
         Toast.makeText(context, "wrong password or username", Toast.LENGTH_LONG).show();
+    }
+
+    public static void setMainText(String wait_for_saving_data) {
+        mainText.setText(wait_for_saving_data);
     }
 
     @Override
@@ -262,6 +266,8 @@ public class MainActivity extends AppCompatActivity {
                         object.put(Const.EMREGNCY_PHONE_KEY, bundle.getString(Const.EMREGNCY_PHONE_KEY));
                         nfcManager.write(object);
                         STATE = 0;
+                        Toast.makeText(this,"Saving completed",Toast.LENGTH_SHORT).show();
+                        setMainText("Waiting for scaning");
                     }
                 } catch (Exception e) {
                     mainText.setText(getString(R.string.waiting_for_scanning_bracelet));

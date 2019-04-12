@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         object.put(Const.NAME_KEY, bundle.getString(Const.NAME_KEY));
                         object.put(Const.EMREGNCY_PHONE_KEY, bundle.getString(Const.EMREGNCY_PHONE_KEY));
                         nfcManager.write(object);
+                        STATE = 0;
                     }
                 } catch (Exception e) {
                     mainText.setText(getString(R.string.waiting_for_scanning_bracelet));

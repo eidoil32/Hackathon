@@ -135,14 +135,16 @@ public class NfcManager {
 
     String descriptor(byte[] data,int buffer){
         int priS = encPrime0*encPrime1*encPrime2;
+
+        String stringData = new String();
         if(data.length<140) {
             for(int i=0;i<data.length;i++)
             {
-                if (data[i]!=0)
-                    data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
+                if((data[i]- (priS/(10*(((i+buffer)%10)+1)))%10)!=0)
+                    stringData+=(char)((byte)(data[i]- (priS/(10*(((i+buffer)%10)+1)))%10));
             }
         }
-        String stringData = new String(data);
+
         return stringData;
     }
 

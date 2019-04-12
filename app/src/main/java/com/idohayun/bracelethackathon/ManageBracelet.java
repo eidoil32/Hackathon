@@ -113,7 +113,8 @@ public class ManageBracelet extends Fragment {
 
                     }
                 }else{
-
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    //builder.setNeutralButton(R.string.data_is_empty);
                 }
             }
         });

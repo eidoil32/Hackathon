@@ -195,7 +195,7 @@ public class ManageBracelet extends Fragment {
                                 list.setAdapter(datesListAdapter);
                             } else {
                                 user_doest_exist = true;
-                                Log.d(TAG, "onResponse: ");
+                                Log.d(TAG, "onResponse: " + response.getString("data"));
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage(getString(R.string.user_dosent_exist));
                                 builder.setCancelable(false);
@@ -231,9 +231,6 @@ public class ManageBracelet extends Fragment {
     }
 
     private void getUserBasicData(final View view, Map<String,String> basicData) {
-
-
-
 
         editTextFullName.setText(basicData.get(Const.NAME_KEY));
         editTextPhoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));

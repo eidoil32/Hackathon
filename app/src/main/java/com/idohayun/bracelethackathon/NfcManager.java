@@ -69,7 +69,7 @@ public class NfcManager {
             Log.d("NfcManager", "cant get data from Json with error: " + e.getMessage());
         }
     }
-//302390542   123456789123456789123456 9384992283
+    //302390542   123456789123456789123456 9384992283
     public JSONObject read(){
         JSONObject dataJson= new JSONObject();
         try {
@@ -93,35 +93,35 @@ public class NfcManager {
     }
 
     private void protectChip(MifareUltralight mul){
-       try {
-           response = mul.transceive(new byte[]{READ, 41});
-           try {
-               if (response[3] == 0xFF) {
-                   response = mul.transceive(new byte[]{
-                           READ, (byte) 0x2A
-                   });
-                   if (response != null && response.length >= 16) {
-                       boolean prot = false;
-                       int authLim = 0;
-                       mul.transceive(new byte[]{WRITE, (byte) 0x2A, (byte) ((response[0] & 0x078) | (prot ? 0x080 : 0x000) | (authLim & 0x007)), 0, 0, 0});
+        try {
+            response = mul.transceive(new byte[]{READ, 41});
+            try {
+                if (response[3] == 0xFF) {
+                    response = mul.transceive(new byte[]{
+                            READ, (byte) 0x2A
+                    });
+                    if (response != null && response.length >= 16) {
+                        boolean prot = false;
+                        int authLim = 0;
+                        mul.transceive(new byte[]{WRITE, (byte) 0x2A, (byte) ((response[0] & 0x078) | (prot ? 0x080 : 0x000) | (authLim & 0x007)), 0, 0, 0});
 
-                   }
+                    }
 
-                   response = mul.transceive(new byte[]{READ, (byte) 0x29});
-                   if (response != null && response.length >= 16) {
-                       int auth0 = 0;
-                       mul.transceive(new byte[]{WRITE, (byte) 0x29, response[0], 0, response[2], (byte) (auth0 & 0x0FF)});
-                   }
-                   mul.transceive(new byte[]{WRITE, (byte) 0x2C, pack[0], pack[1], pack[2], pack[3]});
+                    response = mul.transceive(new byte[]{READ, (byte) 0x29});
+                    if (response != null && response.length >= 16) {
+                        int auth0 = 0;
+                        mul.transceive(new byte[]{WRITE, (byte) 0x29, response[0], 0, response[2], (byte) (auth0 & 0x0FF)});
+                    }
+                    mul.transceive(new byte[]{WRITE, (byte) 0x2C, pack[0], pack[1], pack[2], pack[3]});
 
-                   mul.transceive(new byte[]{WRITE, (byte) 0x2A, pass[0], pass[1], pass[2], pass[3]});
-               }
-           } catch (Exception e) {
-               Log.d("NfcManager", "cant protcet nfc error: " + e.getMessage());
-           }
-       }catch (Exception e){
-           Log.d("NfcManager","cant read nfc tag to check protection with error: "+e.getMessage());
-       }
+                    mul.transceive(new byte[]{WRITE, (byte) 0x2A, pass[0], pass[1], pass[2], pass[3]});
+                }
+            } catch (Exception e) {
+                Log.d("NfcManager", "cant protcet nfc error: " + e.getMessage());
+            }
+        }catch (Exception e){
+            Log.d("NfcManager","cant read nfc tag to check protection with error: "+e.getMessage());
+        }
     }
 
 
@@ -138,7 +138,8 @@ public class NfcManager {
         if(data.length<140) {
             for(int i=0;i<data.length;i++)
             {
-                data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
+                if (data[i]!=0)
+                    data[i] -= (priS/(10*(((i+buffer)%10)+1)))%10;
             }
         }
         String stringData = new String(data);

@@ -55,6 +55,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/btn_save"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -75,7 +76,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:editable="false"
             app:layout_constraintBaseline_toBaselineOf="@+id/text_id_0"
             app:layout_constraintStart_toEndOf="@+id/text_id_0"
             tools:text="204062574" />

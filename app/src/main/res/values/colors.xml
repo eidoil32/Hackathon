@@ -5,4 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="backgroundWhite">#FFFFFF</color>
     <color name="background_color_popup">#10000000</color>
+    <color name="button_simple_background_color">#2985bc</color>
+    <color name="button_simple_background_color_pressed">#2576a7</color>
+    <color name="white_text">#ffffff</color>
 </resources>

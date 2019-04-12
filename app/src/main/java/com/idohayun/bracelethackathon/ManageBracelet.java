@@ -118,7 +118,7 @@ public class ManageBracelet extends Fragment {
     }
 
     private void addNewUserToDB() {
-        JsonObjectRequest request;
+        final JsonObjectRequest request;
         RequestQueue queue;
         queue = Volley.newRequestQueue(context);
         Log.d(TAG, "onClick: update data to server!");
@@ -137,7 +137,7 @@ public class ManageBracelet extends Fragment {
                             if(response.getString("status").equals("true")) {
                                 Toast.makeText(context,"success!",Toast.LENGTH_SHORT).show();
                             } else {
-                                Log.d(TAG, "onResponse: failed adding new user");
+                                Log.d(TAG, "onResponse: failed adding new user" + response.getString("data"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -196,7 +196,9 @@ public class ManageBracelet extends Fragment {
                                 builder.setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        textViewID.setEnabled(true);
+                                        textViewID.setFocusable(true);
+                                        textViewID.setFocusableInTouchMode(true);
+                                        textViewID.setClickable(true);
                                         textViewID.setText("");
                                         editTextFullName.setText("");
                                         editTextPhoneNumber.setText("");
@@ -204,6 +206,7 @@ public class ManageBracelet extends Fragment {
 
                                     }
                                 });
+                                builder.show();
                                 Log.d(TAG, "onResponse: user doesn't exist!");
                             }
                         } catch (JSONException e) {

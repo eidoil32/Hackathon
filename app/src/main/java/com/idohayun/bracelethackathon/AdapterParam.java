@@ -1,6 +1,7 @@
 package com.idohayun.bracelethackathon;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,10 +10,24 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdapterParam extends ArrayAdapter {
     private List<String> data;
@@ -20,13 +35,15 @@ public class AdapterParam extends ArrayAdapter {
     private final LayoutInflater layoutInflater;
     private Context context;
     private static final String TAG = "AdapterParam";
+    private final int patient;
 
-    public AdapterParam(Context context, int resource, List<String> data) {
+    public AdapterParam(Context context, int resource, List<String> data, int patient) {
         super(context, resource);
         this.data = data;
         this.context = context;
         this.layoutResource = resource;
         this.layoutInflater = LayoutInflater.from(context);
+        this.patient = patient;
     }
 
 
@@ -71,6 +88,41 @@ public class AdapterParam extends ArrayAdapter {
         viewHolder.delImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RequestQueue queue = Volley.newRequestQueue(context);
+                Map<String, String> map = new HashMap<>();
+                map.put("ID", Integer.toString(patient));
+                map.put("Description", data.get(position));
+                Log.d(TAG, "onDateSet: " + map.toString());
+                final JSONObject jsonObject = new JSONObject(map);
+                Log.d(TAG, "updateListOfData: jsonObject: " + jsonObject.toString());
+                JsonObjectRequest request = new JsonObjectRequest(
+                        Request.Method.POST, // the request method
+                        ServerManager.DeleteDisease, jsonObject,
+                        new Response.Listener<JSONObject>() { // the response listener
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.d(TAG, "onResponse: " + response.toString());
+                                try {
+                                    if (response.getString("status").equals("true")) {
+                                        Log.d(TAG, "onResponse: successed");
+                                        notifyDataSetChanged();
+                                    } else {
+                                        Log.d(TAG, "onResponse: " + response.getString("data"));
+                                        Toast.makeText(context, "error from server!", Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() { // the error listener
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "onErrorResponse: error " + error.toString());
+                                Toast.makeText(context, "Oops! Got error from server!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                queue.add(request);
                 Log.d(TAG, "onClick: delete this...");
             }
         });

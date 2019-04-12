@@ -28,23 +28,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class EditDisease extends Activity {
     private static final String TAG = "EditDisease";
-    private Patient patient;
-    private ListView list;
-
-    public EditDisease() {
-
-    }
-
-    EditDisease(Patient patient, ListView list) {
-        this.patient = patient;
-        this.list = list;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +45,22 @@ public class EditDisease extends Activity {
         final EditText newDiseasesText = (EditText) findViewById(R.id.newDisease);
         Button saveBtn = findViewById(R.id.done_With_The_Page);
 
+        Bundle bundle = Objects.requireNonNull(getIntent().getExtras()).getBundle("bundle");
+        assert bundle != null;
+        final String id = bundle.getString("ID");
+        final List<String> diseasesList = (ArrayList<String>) bundle.getSerializable("List");
+
+        final ListView listView = ManageBracelet.getListView();
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newDisease = newDiseasesText.toString();
+
+                String newDisease = newDiseasesText.getText().toString();
                 boolean isExist = false;
-                final List<String> patientList = patient.getDiseases();
-                if (patientList != null) {
-                    for (int i = 0; i < patientList.size(); i++) {
-                        if (newDisease.equals(patientList.get(i))) {
+                if (diseasesList != null) {
+                    for (int i = 0; i < diseasesList.size(); i++) {
+                        if (newDisease.equals(diseasesList.get(i))) {
                             Toast.makeText(getApplicationContext(), "disease allready exists", Toast.LENGTH_LONG).show();
                             isExist = true;
                             break;
@@ -70,15 +68,14 @@ public class EditDisease extends Activity {
                     }
                 }
                 if (!isExist) {
-                    patientList.add(newDisease);
-                    patient.setDiseases(patientList);
+                    diseasesList.add(newDisease);
                     RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
                     Map<String, String> map = new HashMap<>();
-                    String id = patient.getId();
                     if (id != null) {
                         map.put("ID", id);
                         map.put("Description", newDisease);
                     } else {
+                        Log.d(TAG, "onClick: id is empty");
                         return;
                     }
                     Log.d(TAG, "onDateSet: " + map.toString());
@@ -93,9 +90,10 @@ public class EditDisease extends Activity {
                                     Log.d(TAG, "onResponse: " + response.toString());
                                     try {
                                         if (response.getString("status").equals("true")) {
-                                            AdapterParam datesListAdapter = new AdapterParam(getApplicationContext(), R.layout.adapter_paramter, patientList);
-                                            list.setVisibility(View.VISIBLE);
-                                            list.setAdapter(datesListAdapter);
+                                            Log.d(TAG, "onResponse: successed");
+                                            AdapterParam datesListAdapter = new AdapterParam(getApplicationContext(), R.layout.adapter_paramter, diseasesList,Integer.parseInt(id));
+                                            listView.setVisibility(View.VISIBLE);
+                                            listView.setAdapter(datesListAdapter);
                                             finish();
                                         } else {
                                             Log.d(TAG, "onResponse: " + response.getString("data"));

@@ -85,30 +85,34 @@ public class ManageBracelet extends Fragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //updateDataToServer(data,getContext());
-                String t_ID, t_NAME, t_PHONE;
-                t_ID = textViewID.getText().toString();
-                t_NAME = editTextFullName.getText().toString();
-                t_PHONE = editTextPhoneNumber.getText().toString();
-                if(!t_ID.isEmpty() && !t_NAME.isEmpty() && !t_PHONE.isEmpty()) {
-                    Bundle bundle = new Bundle();
-                    patient.setFullName(t_NAME);
-                    patient.setPhone(t_PHONE);
-                    patient.setId(t_ID);
-                    bundle.putString(Const.ID_KEY, patient.getId());
-                    bundle.putString(Const.NAME_KEY, patient.getFullName());
-                    bundle.putString(Const.EMREGNCY_PHONE_KEY, patient.getPhone());
-                    setArguments(bundle);
-                    Log.d(TAG, "onClick: here!");
-                    MainActivity.setSTATE(1);
+                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
+                    //updateDataToServer(data,getContext());
+                    String t_ID, t_NAME, t_PHONE;
+                    t_ID = textViewID.getText().toString();
+                    t_NAME = editTextFullName.getText().toString();
+                    t_PHONE = editTextPhoneNumber.getText().toString();
+                    if (!t_ID.isEmpty() && !t_NAME.isEmpty() && !t_PHONE.isEmpty()) {
+                        Bundle bundle = new Bundle();
+                        patient.setFullName(t_NAME);
+                        patient.setPhone(t_PHONE);
+                        patient.setId(t_ID);
+                        bundle.putString(Const.ID_KEY, patient.getId());
+                        bundle.putString(Const.NAME_KEY, patient.getFullName());
+                        bundle.putString(Const.EMREGNCY_PHONE_KEY, patient.getPhone());
+                        setArguments(bundle);
+                        Log.d(TAG, "onClick: here!");
+                        MainActivity.setSTATE(1);
 
-                    if(user_doest_exist) {
-                        addNewUserToDB();
+                        if (user_doest_exist) {
+                            addNewUserToDB();
+                        } else {
+                            updateDataToServer(data, getContext());
+                        }
+                        btnSave.setVisibility(View.VISIBLE);
                     } else {
-                        updateDataToServer(data, getContext());
+
                     }
-                    btnSave.setVisibility(View.VISIBLE);
-                } else {
+                }else{
 
                 }
             }
@@ -190,6 +194,7 @@ public class ManageBracelet extends Fragment {
                                 list.setAdapter(datesListAdapter);
                             } else {
                                 user_doest_exist = true;
+                                Log.d(TAG, "onResponse: ");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setMessage(getString(R.string.user_dosent_exist));
                                 builder.setCancelable(false);
@@ -225,6 +230,9 @@ public class ManageBracelet extends Fragment {
     }
 
     private void getUserBasicData(final View view, Map<String,String> basicData) {
+
+
+
 
         editTextFullName.setText(basicData.get(Const.NAME_KEY));
         editTextPhoneNumber.setText(basicData.get(Const.EMREGNCY_PHONE_KEY));

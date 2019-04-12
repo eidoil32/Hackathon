@@ -1,17 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BraceletHackathon</string>
     <string name="login_page_btn_login">LOGIN</string>
-    <string name="login_welcome_text">WELCOME TO OUT APP</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_welcome_text">WELCOME TO OUT APP</string>
     <string name="scan_page_btn_scan_again">Scan Again</string>
     <string name="btn_back">BACK</string>
     <string name="btn_save">SAVE</string>
     <string name="btn_add_new">Add New</string>
     <string name="text_mng_bracelet">Name:</string>
     <string name="text_id">ID:</string>
-    <string name="text_phone">Emergency Phone:</string>
+    <string name="text_phone">Phone:</string>
     <string name="text_full_name">Full name:</string>
     <string name="waiting_for_scanning_bracelet">Waiting for scanning bracelet</string>
     <string name="user_not_found">User not found</string>

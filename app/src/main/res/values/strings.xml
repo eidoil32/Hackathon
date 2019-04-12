@@ -20,4 +20,5 @@
     <string name="user_dosent_exist">bracelet Identifier does not exist</string>
     <string name="yes_button">Yes</string>
     <string name="data_is_empty">the data is empty in the page</string>
+    <string name="txt_no">NO</string>
 </resources>

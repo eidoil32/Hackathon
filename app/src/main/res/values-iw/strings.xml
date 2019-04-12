@@ -20,4 +20,5 @@
     <string name="yes_button">Yes</string>
     <string name="data_is_empty">the data is empty in the page</string>
     <string name="txt_no">NO</string>
+    <string name="input_is_too_long">input is too long</string>
 </resources>

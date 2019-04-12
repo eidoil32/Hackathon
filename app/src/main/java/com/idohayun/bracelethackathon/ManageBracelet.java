@@ -96,37 +96,54 @@ public class ManageBracelet extends Fragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(textViewID.getText().length()!=0&&editTextFullName.getText().length()!=0&&editTextPhoneNumber.getText().length()!=0) {
-                    //updateDataToServer(data,getContext());
-                    String t_ID, t_NAME, t_PHONE;
-                    t_ID = textViewID.getText().toString();
-                    t_NAME = editTextFullName.getText().toString();
-                    t_PHONE = editTextPhoneNumber.getText().toString();
-                    if(everyThingIsOk(t_ID,t_NAME,t_PHONE)) {
-                        if (!t_ID.isEmpty() && !t_NAME.isEmpty() && !t_PHONE.isEmpty()) {
-                            Bundle bundle = new Bundle();
-                            patient.setFullName(t_NAME);
-                            patient.setPhone(t_PHONE);
-                            patient.setId(t_ID);
-                            bundle.putString(Const.ID_KEY, patient.getId());
-                            bundle.putString(Const.NAME_KEY, patient.getFullName());
-                            bundle.putString(Const.EMREGNCY_PHONE_KEY, patient.getPhone());
-                            setArguments(bundle);
-                            Log.d(TAG, "onClick: here!");
-                            MainActivity.setSTATE(1);
+                boolean isSintax = true;
+                if (textViewID.getText().length() > 9) {
+                    isSintax=false;
+                    textViewID.setError("input is too long");
+                }
+                if (editTextFullName.getText().length()> 24) {
+                    isSintax = false;
+                    editTextFullName.setError("input is too long");
+                }
+                if (editTextPhoneNumber.getText().length() > 10) {
+                    isSintax=false;
+                    editTextPhoneNumber.setError("input is too long");
+                }
 
-                            if (user_doest_exist) {
-                                addNewUserToDB();
+                if (textViewID.getText().length() != 0 && editTextFullName.getText().length() != 0 && editTextPhoneNumber.getText().length() != 0) {
+
+                    if (isSintax) {
+                        //updateDataToServer(data,getContext());
+                        String t_ID, t_NAME, t_PHONE;
+                        t_ID = textViewID.getText().toString();
+                        t_NAME = editTextFullName.getText().toString();
+                        t_PHONE = editTextPhoneNumber.getText().toString();
+                        if (everyThingIsOk(t_ID, t_NAME, t_PHONE)) {
+                            if (!t_ID.isEmpty() && !t_NAME.isEmpty() && !t_PHONE.isEmpty()) {
+                                Bundle bundle = new Bundle();
+                                patient.setFullName(t_NAME);
+                                patient.setPhone(t_PHONE);
+                                patient.setId(t_ID);
+                                bundle.putString(Const.ID_KEY, patient.getId());
+                                bundle.putString(Const.NAME_KEY, patient.getFullName());
+                                bundle.putString(Const.EMREGNCY_PHONE_KEY, patient.getPhone());
+                                setArguments(bundle);
+                                Log.d(TAG, "onClick: here!");
+                                MainActivity.setSTATE(1);
+
+                                if (user_doest_exist) {
+                                    addNewUserToDB();
+                                } else {
+                                    updateDataToServer(data, getContext());
+                                }
                             } else {
-                                updateDataToServer(data, getContext());
+                                Log.d(TAG, "onClick: input incorrect!");
                             }
-                        } else {
-                            Log.d(TAG, "onClick: input incorrect!");
                         }
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        //builder.setNeutralButton(R.string.data_is_empty);
                     }
-                }else{
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    //builder.setNeutralButton(R.string.data_is_empty);
                 }
             }
         });
@@ -287,8 +304,9 @@ public class ManageBracelet extends Fragment {
         queue = Volley.newRequestQueue(context);
         Log.d(TAG, "onClick: update data to server!");
         Map<String,String> map = new HashMap<>();
+        map.put("ID",patient.getId());
         for (int i = 0 ; i < data.size(); i++) {
-            map.put(Integer.toString(i),data.get(0));
+            map.put("name",data.get(i));
         }
         final JSONObject jsonObject = new JSONObject(map);
         request = new JsonObjectRequest(

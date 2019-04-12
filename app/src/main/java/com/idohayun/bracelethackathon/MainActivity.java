@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private String dataSting;
     NfcManager nfcManager;
     NfcAdapter nfcAdapter;
+    public  String s_username = null, s_password = null, s_premission = null;
 
     public static void setSTATE(int input) {
         STATE = input;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         nfcManager = new NfcManager();
 
         final EditText username = findViewById(R.id.login_page_user_name);
@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         final Button loginBtn = findViewById(R.id.login_page_login_button);
 
         int i_id = 1;
-        String s_username = null, s_password = null, s_premission = null;
 
         Cursor cursor = db.getData();
         if (cursor.moveToFirst()) {
@@ -111,97 +110,107 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean isSintax =true;
                 String userNameString = username.getText().toString();
                 String userPasswordString = userPassword.getText().toString();
-
-                if (userNameString.isEmpty() || userPasswordString.isEmpty()) {
-                    ErrorToast(context);
-                } else {
-                    JsonObjectRequest request;
-                    RequestQueue queue;
-                    queue = Volley.newRequestQueue(context);
-                    Log.d(TAG, "onClick: update data to server!");
-                    Map<String, String> map = new HashMap<>();
-                    map.put("UserName", userNameString);
-                    map.put("Password", userPasswordString);
-                    Log.d(TAG, "onClick: password: " + userPasswordString);
-                    final JSONObject jsonObject = new JSONObject(map);
-                    request = new JsonObjectRequest(
-                            Request.Method.POST, // the request method
-                            ServerManager.UserLogin, jsonObject,
-                            new Response.Listener<JSONObject>() { // the response listener
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    try {
-                                        if (response.getString("status").equals("true")) {
-                                            Toast.makeText(context, "success!", Toast.LENGTH_SHORT).show();
-                                            String s = response.getString("data");
-                                            Log.d(TAG, "onResponse: " + response.getString("data"));
-                                            StringBuilder sb = new StringBuilder();
-                                            sb.append(s);
-                                            int i_id = 1;
-                                            String s_username = null, s_password = null, s_premission = null;
-                                            JSONArray jsonArray = new JSONArray(s);
-                                            for (int i = 0; i < jsonArray.length(); i++) {
-                                                JSONObject obj = jsonArray.getJSONObject(i);
-                                                s_username = obj.getString("username");
-                                                s_password = obj.getString("password");
-                                                s_premission = obj.getString("permission");
-                                            }
-                                            Tender.Permissions e_permissions;
-
-                                            assert s_premission != null;
-                                            switch (s_premission) {
-                                                case "volunteer":
-                                                    e_permissions = Tender.Permissions.volunteer;
-                                                    break;
-                                                case "Doctor":
-                                                    e_permissions = Tender.Permissions.Doctor;
-                                                    break;
-                                                case "Magen David Adom":
-                                                    e_permissions = Tender.Permissions.Magen_David_Adom;
-                                                    break;
-                                                default:
-                                                    e_permissions = Tender.Permissions.Doctor;
-                                                    break;
-                                            }
-
-                                            Tender user = new Tender(i_id, s_username, s_password, e_permissions);
-                                            if (db.addData(user)) {
-                                                Log.d(TAG, "onResponse: success");
-                                            } else {
-                                                Log.d(TAG, "onResponse: failed");
-                                            }
-                                            STATE = 0;
-                                            username.setVisibility(View.INVISIBLE);
-                                            userPassword.setVisibility(View.INVISIBLE);
-                                            loginBtn.setVisibility(View.INVISIBLE);
-                                            mainText.setText(getString(R.string.waiting_for_scanning_bracelet));
-                                            waiting.setVisibility(View.VISIBLE);
-                                        } else {
-                                            if (response.getString("message").equals("user_not_found")) {
-                                                Toast.makeText(context, getString(R.string.user_not_found), Toast.LENGTH_SHORT).show();
-                                            } else if (response.getString("message").equals("password_incorrect")) {
+                if (username.getText().length() > 10) {
+                    isSintax=false;
+                    username.setError("input is too long");
+                }
+                if (userPassword.getText().length() > 10) {
+                    isSintax=false;
+                    userPassword.setError("input is too long");
+                }
+                if(isSintax) {
+                    if (userNameString.isEmpty() || userPasswordString.isEmpty()) {
+                        ErrorToast(context);
+                    } else {
+                        JsonObjectRequest request;
+                        RequestQueue queue;
+                        queue = Volley.newRequestQueue(context);
+                        Log.d(TAG, "onClick: update data to server!");
+                        Map<String, String> map = new HashMap<>();
+                        map.put("UserName", userNameString);
+                        map.put("Password", userPasswordString);
+                        Log.d(TAG, "onClick: password: " + userPasswordString);
+                        final JSONObject jsonObject = new JSONObject(map);
+                        request = new JsonObjectRequest(
+                                Request.Method.POST, // the request method
+                                ServerManager.UserLogin, jsonObject,
+                                new Response.Listener<JSONObject>() { // the response listener
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        try {
+                                            if (response.getString("status").equals("true")) {
+                                                Toast.makeText(context, "success!", Toast.LENGTH_SHORT).show();
+                                                String s = response.getString("data");
                                                 Log.d(TAG, "onResponse: " + response.getString("data"));
-                                                Toast.makeText(context, getString(R.string.password_wrong), Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(context, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            },
-                            new Response.ErrorListener() { // the error listener
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    Log.d(TAG, "onErrorResponse: " + error.getMessage());
-                                    Toast.makeText(context, "Oops! Got error from server!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                                StringBuilder sb = new StringBuilder();
+                                                sb.append(s);
+                                                int i_id = 1;
 
-                    queue.add(request);
+                                                JSONArray jsonArray = new JSONArray(s);
+                                                for (int i = 0; i < jsonArray.length(); i++) {
+                                                    JSONObject obj = jsonArray.getJSONObject(i);
+                                                    s_username = obj.getString("username");
+                                                    s_password = obj.getString("password");
+                                                    s_premission = obj.getString("permission");
+                                                }
+                                                Tender.Permissions e_permissions;
+
+                                                assert s_premission != null;
+                                                switch (s_premission) {
+                                                    case "volunteer":
+                                                        e_permissions = Tender.Permissions.volunteer;
+                                                        break;
+                                                    case "Doctor":
+                                                        e_permissions = Tender.Permissions.Doctor;
+                                                        break;
+                                                    case "Magen David Adom":
+                                                        e_permissions = Tender.Permissions.Magen_David_Adom;
+                                                        break;
+                                                    default:
+                                                        e_permissions = Tender.Permissions.Doctor;
+                                                        break;
+                                                }
+
+                                                Tender user = new Tender(i_id, s_username, s_password, e_permissions);
+                                                if (db.addData(user)) {
+                                                    Log.d(TAG, "onResponse: success");
+                                                } else {
+                                                    Log.d(TAG, "onResponse: failed");
+                                                }
+                                                STATE = 0;
+                                                username.setVisibility(View.INVISIBLE);
+                                                userPassword.setVisibility(View.INVISIBLE);
+                                                loginBtn.setVisibility(View.INVISIBLE);
+                                                mainText.setText(getString(R.string.waiting_for_scanning_bracelet));
+                                                waiting.setVisibility(View.VISIBLE);
+                                            } else {
+                                                if (response.getString("message").equals("user_not_found")) {
+                                                    Toast.makeText(context, getString(R.string.user_not_found), Toast.LENGTH_SHORT).show();
+                                                } else if (response.getString("message").equals("password_incorrect")) {
+                                                    Log.d(TAG, "onResponse: " + response.getString("data"));
+                                                    Toast.makeText(context, getString(R.string.password_wrong), Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(context, getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() { // the error listener
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.d(TAG, "onErrorResponse: " + error.getMessage());
+                                        Toast.makeText(context, "Oops! Got error from server!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                        queue.add(request);
+                    }
                 }
             }
         });

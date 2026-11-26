@@ -1,0 +1,12 @@
+const {chromium,devices}=require('playwright');const fs=require('fs');const path=require('path');const dir=require('path').join(__dirname,'..','app');
+const html='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>'+fs.readFileSync(path.join(dir,'fuel-log.html'),'utf8')+'</body></html>';
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({...devices['iPhone 13'],deviceScaleFactor:1});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route('http://app.test/**',r=>r.request().url().endsWith('foods.json')?r.fulfill({contentType:'application/json',body:fs.readFileSync(path.join(dir,'foods.json'))}):r.fulfill({contentType:'text/html',body:html}));
+await p.addInitScript(()=>{const prof={weight:80,bodyFat:18,exercise:4,sex:'male',age:30,goal:'maintain'};
+ const db={doc:()=>({onSnapshot:(n)=>{setTimeout(()=>n({exists:true,data:()=>prof,metadata:{fromCache:false}}),10);return()=>{}}}),collection:()=>({limit:()=>({onSnapshot:(n)=>{setTimeout(()=>n({docs:[],metadata:{fromCache:false}}),10);return()=>{}}}),doc:()=>({set:async()=>{}})})};
+ const sample=async()=>({});sample.json=async()=>({ideas:[{title:'סלמון אפוי ובטטה',why:'חלבון ואומגה 3, וויטמין A מהבטטה',items:[{name:'סלמון אפוי',amount:'150 g',grams:150,foodId:'salmon'},{name:'בטטה',amount:'200 g',grams:200,foodId:'sweet_potato'},{name:'סלט ירוק',amount:'100 g',grams:100,foodId:'lettuce'}]}]});
+ const _d=db.doc; db.doc=(p)=>Object.assign(_d(p),{collection:db.collection}); const user={id:async()=>'u_test',can:async()=>false};
+ window.claude={use:async n=>n==='user'?user:n==='db'?db:n==='sample'?sample:null};});
+await p.goto('http://app.test/');await p.waitForTimeout(800);
+await p.locator('.idea').first().scrollIntoViewIfNeeded();await p.locator('.idea').first().screenshot({path:path.join(dir,'idea.png')});
+console.log(await p.locator('.idea').first().innerText(),errs);await b.close();})();

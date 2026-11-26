@@ -5,12 +5,12 @@ description: Continue work on "Fuel Log", the user's personal nutrition-tracking
 
 # Fuel Log — nutrition tracker Artifact
 
-> This folder lives at `FuelLog/` in the repo (moved out of `.claude/skills/` at the user's request), so Claude Code does not load it automatically. To use it in a new session, read this file first ("read FuelLog/SKILL.md"), or copy the folder to `.claude/skills/fuel-log/` in that session.
+> Repo layout: this skill file is `.claude/skills/fuel-log/SKILL.md` (so Claude Code loads it automatically); the app's files live in the visible folder **`FuelLog/`** at the repo root (`FuelLog/app`, `FuelLog/tools`, `FuelLog/tests`). All paths below are relative to the repo root. The user wanted a separate `fuellog` repository, but this session had no access to it; if a session later has it, the `FuelLog/` folder and this skill can move there.
 
 ## What it is
 
 - **Live app:** https://claude.ai/artifact/Wk7pqTzScLMwvCgmmmoCDK (title "Fuel Log", private, pinned to the owner's claude.ai sidebar).
-- **Source of truth for the page:** `app/fuel-log.html` + `app/foods.json` in this folder. The published version may be newer than the repo if someone edited it in another session, so **always `Artifact action:"read"` the URL first** and diff against `app/fuel-log.html` before republishing.
+- **Source of truth for the page:** `FuelLog/app/fuel-log.html` + `FuelLog/app/foods.json`. The published version may be newer than the repo if someone edited it in another session, so **always `Artifact action:"read"` the URL first** and diff against `FuelLog/app/fuel-log.html` before republishing.
 - The owner speaks **Hebrew**. Reply in Hebrew unless they write in English. Default UI language is Hebrew (RTL).
 - One self-contained HTML page (no framework). Fonts: Archivo / Assistant / IBM Plex via Google Fonts.
 
@@ -21,8 +21,8 @@ From a new conversation, read the artifact first (required before any publish wi
 ```
 Artifact publish
   url: https://claude.ai/artifact/Wk7pqTzScLMwvCgmmmoCDK
-  file_path: <this folder>/app/fuel-log.html
-  files: {"foods.json": "<this folder>/app/foods.json"}
+  file_path: FuelLog/app/fuel-log.html
+  files: {"foods.json": "FuelLog/app/foods.json"}
 ```
 
 Omit `capabilities` to keep them. If you must restate them, pass the full set exactly:
@@ -33,7 +33,7 @@ Omit `capabilities` to keep them. If you must restate them, pass the full set ex
  "user": {}, "sample": {}, "assets": {"upload": "interact"}, "dictation": {}}
 ```
 
-After any change: run the tests (below), publish, then copy the published file back into `app/` and commit.
+After any change: run the tests (below), publish, and commit `FuelLog/` (publish straight from `FuelLog/app/fuel-log.html` so the repo is always the source).
 
 ## Pages (hash routes, bottom tab bar)
 
@@ -59,7 +59,7 @@ Every signed-in viewer gets a private subtree; nobody else (owner included) can 
 | Weigh-ins | `.../log/weights/<YYYY-MM-DD>` | `data/users/me/log/weights` |
 | Photos | `.../log/photos/<id>` (`assetId` → `/_blob/<assetId>`) | `data/users/me/log/photos` |
 
-Built-in food DB (137 foods, Hebrew + English names + aliases, per-100 g values) is the published file `foods.json`, shared by everyone. Rebuild it with `tools/build_foods.py` (edit the `RAW` table there; values are typical USDA SR values written from knowledge, since the USDA download host was blocked).
+Built-in food DB (137 foods, Hebrew + English names + aliases, per-100 g values) is the published file `foods.json`, shared by everyone. Rebuild it with `FuelLog/tools/build_foods.py` (edit the `RAW` table there; values are typical USDA SR values written from knowledge, since the USDA download host was blocked).
 
 **Profile doc:** `{weight, bodyFat, exercise (workouts/week), sex: "male"|"female", age, goal: "maintain"|"lose"|"gain", kcalAdjust?, adjustedAt?, updatedAt}`.
 
@@ -79,7 +79,7 @@ Doc id convention: `YYYY-MM-DD_<slot><n>` from chat (e.g. `2026-11-26_dinner1`),
 ## Logging a meal the user tells you in chat
 
 1. Parse the items and amounts. Assume typical portions when missing (egg 50 g, slice of yellow cheese 20 g, medium tomato 123 g, Israeli cucumber 120 g) and **state every assumption**.
-2. Look each item up in `app/foods.json` first, then in the user's `data/users/me/log/foods`. **Web-search only items that are in neither.**
+2. Look each item up in `FuelLog/app/foods.json` first, then in the user's `data/users/me/log/foods`. **Web-search only items that are in neither.**
 3. Compute `n` = per100 × grams / 100 (a small Python script is easiest). Keep `foodId` for database items.
 4. Write the meal with `ArtifactData` (`set` new docs; for edits pass `if_version`). Batch the meal + any new food.
 5. **Add every newly searched food** to `data/users/me/log/foods` with `per100` values and its source URL.
@@ -113,13 +113,13 @@ English strings are the source; Hebrew comes from the `HE` dictionary (exact mat
 ## Tests (Playwright, mocked `window.claude`)
 
 ```
-cd tests && node usertest.js && node ideatest.js && node voicetest.js
+cd FuelLog/tests && node usertest.js && node ideatest.js && node voicetest.js
 ```
 - `usertest.js`: per-user paths; signed-out state.
 - `ideatest.js`: idea card with per-ingredient table (Hebrew).
 - `voicetest.js`: voice → logged dinner + new food added; iPhone fallback (no dictation) with Return-to-log.
 - `sheettest.js`: home macros read "eaten X of Y"; a low-vitamin chip and a vitamin card open the info sheet; Escape closes it.
-Tests serve `app/` through `page.route`, so no local server is needed. Don't run a background HTTP server.
+Tests serve `FuelLog/app/` through `page.route`, so no local server is needed. Don't run a background HTTP server.
 
 ## Known limits / open items
 

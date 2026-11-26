@@ -5,6 +5,8 @@ description: Continue work on "Fuel Log", the user's personal nutrition-tracking
 
 # Fuel Log — nutrition tracker Artifact
 
+> This folder lives at `FuelLog/` in the repo (moved out of `.claude/skills/` at the user's request), so Claude Code does not load it automatically. To use it in a new session, read this file first ("read FuelLog/SKILL.md"), or copy the folder to `.claude/skills/fuel-log/` in that session.
+
 ## What it is
 
 - **Live app:** https://claude.ai/artifact/Wk7pqTzScLMwvCgmmmoCDK (title "Fuel Log", private, pinned to the owner's claude.ai sidebar).
@@ -37,11 +39,13 @@ After any change: run the tests (below), publish, then copy the published file b
 
 | Hash | Page | Contents |
 |---|---|---|
-| `#home` | Home | Big "calories left today", macros left, **next-meal suggestion (auto-loads, cached per user/day/slot/meal-count/lang in localStorage `fuel.ideas`)** with a per-ingredient nutrition table, "Record what you ate" button, quick add/weigh buttons |
+| `#home` | Home | Big "calories left today", macros as **"eaten X of Y g"**, low-nutrient chips that open the nutrient sheet, **next-meal suggestion (auto-loads, cached per user/day/slot/meal-count/lang in localStorage `fuel.ideas`)** with a per-ingredient nutrition table, "Record what you ate" button, quick add/weigh buttons |
 | `#meals` | Meals | Date nav, meal cards (edit / delete), composer with 3 tabs: Search foods (local DB), Describe it (text or voice → Claude → auto-logged with Undo), Enter numbers |
-| `#nutrition` | Nutrition | "Daily Facts" label, macro split, 7-day chart, 19 vitamins/minerals vs targets |
+| `#nutrition` | Nutrition | "Daily Facts" label, macro split, 7-day chart, 19 vitamins/minerals vs targets (each card opens the nutrient sheet) |
 | `#progress` | Progress | Weekly weigh-ins + SVG chart + trend advice with "Apply ±kcal"; dated progress photos with before/after compare |
 | `#me` | Profile | Profile form, computed targets, learned habits, method + sources |
+
+**Nutrient sheet** (`openNutrient(k)`): bottom sheet with today's amount vs target, why the body needs it (`WHY[k].en/.he`, written by us), and the top 10 foods for it per typical serving computed from the food DB (`% of daily target`). For limits (sodium, sugar) the list is titled "Biggest sources". Serving labels are translated by `servingLabel()` / `SERV_HE`.
 
 ## Data model (per-user, private)
 
@@ -114,6 +118,7 @@ cd tests && node usertest.js && node ideatest.js && node voicetest.js
 - `usertest.js`: per-user paths; signed-out state.
 - `ideatest.js`: idea card with per-ingredient table (Hebrew).
 - `voicetest.js`: voice → logged dinner + new food added; iPhone fallback (no dictation) with Return-to-log.
+- `sheettest.js`: home macros read "eaten X of Y"; a low-vitamin chip and a vitamin card open the info sheet; Escape closes it.
 Tests serve `app/` through `page.route`, so no local server is needed. Don't run a background HTTP server.
 
 ## Known limits / open items

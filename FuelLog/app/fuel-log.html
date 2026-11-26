@@ -279,6 +279,24 @@ main .wrap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))!important
 .mtitle{font-size:20px;font-weight:800;font-stretch:85%;color:var(--ink);margin-bottom:10px}
 .method .src{margin-top:8px}
 .datenav[hidden]{display:none!important}
+.gapbtn{font:inherit;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--warn);font-weight:700;border:1px solid transparent;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.gapbtn:hover{border-color:var(--warn)}
+button.mc{text-align:start;font:inherit;color:inherit;cursor:pointer;width:100%}
+button.mc:hover{border-color:var(--accent)}
+.sheet-bg{position:fixed;inset:0;z-index:20;background:rgba(10,20,16,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);color:var(--ink);width:min(560px,100%);max-height:86vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+@media (min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:16px}}
+.sh-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sh-head h2{font-size:24px;font-weight:800;font-stretch:85%}
+.sh-today{font-size:14px;color:var(--muted)}
+.sh-sub{font-size:15px;font-weight:800;margin:8px 0 0}
+.sh-why{margin:0;font-size:14.5px;line-height:1.6}
+.sh-foods{display:flex;flex-direction:column}
+.sh-foods .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--soft);font-size:14px}
+.sh-foods .r small{display:block;color:var(--muted);font-size:12px}
+.sh-foods .amt{font-family:var(--f-mono);font-size:13px;white-space:nowrap}
+.sh-foods .pc{font-family:var(--f-mono);font-size:12px;color:var(--good);min-width:44px;text-align:end}
+html[lang="he"] .sh-foods .amt, html[lang="he"] .sh-foods .pc{font-family:inherit;font-weight:700}
 .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .recbig{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;font-size:17px;border-radius:12px}
 .recbig .ic{width:24px;height:24px}
@@ -499,6 +517,17 @@ html[lang="he"] .nmbudget b, html[lang="he"] .leftmac b, html[lang="he"] .habit-
 </div>
 </main>
 
+<div class="sheet-bg" id="sheetBg" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+    <div class="sh-head"><h2 id="shTitle">–</h2><button class="btn ghost" id="shClose" type="button" aria-label="Close">✕</button></div>
+    <div id="shToday" class="sh-today"></div>
+    <h3 class="sh-sub">Why you need it</h3>
+    <p id="shWhy" class="sh-why" data-noi18n></p>
+    <h3 class="sh-sub" id="shFoodsTitle">Foods rich in it</h3>
+    <div class="hint" id="shFoodsHint">Per typical serving, from the food database.</div>
+    <div id="shFoods" class="sh-foods"></div>
+  </div>
+</div>
 <nav class="tabbar" aria-label="Pages">
   <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
   <a href="#meals" data-tab="meals"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1-3 4-3 7h3v11"/></svg><span>Meals</span></a>
@@ -577,7 +606,7 @@ const HE = {
   "Storage is full. Delete some older photos first.":"האחסון מלא. מחק קודם כמה תמונות ישנות.",
   "Estimating isn't available in this view. Tell Claude in chat what you ate, or enter numbers.":"ההערכה לא זמינה כאן. כתוב ל-Claude בצ׳אט מה אכלת, או הזן ערכים.",
   "Set up your profile to see how much is left.":"מלא פרופיל כדי לראות כמה נשאר.","Go to profile":"לפרופיל","Eaten":"נאכל","left":"נשאר","over":"מעל",
-  "Over today's target by":"מעל היעד היומי ב-","Ideas from Claude":"רעיונות מ-Claude","Your data is private to your Claude account. Anyone else who opens this app sees only their own log.":"הנתונים שלך פרטיים לחשבון Claude שלך. כל מי שפותח את האפליקציה רואה רק את היומן שלו.","Sign in to claude.ai to keep your own private log.":"התחבר ל-claude.ai כדי לנהל יומן פרטי משלך.","Record what you ate":"הקלט מה אכלת","Record":"הקלטה","Stop":"עצירה","Find ingredients & log":"מצא מרכיבים ורשום","Finding ingredients…":"מחפש מרכיבים…",
+  "Over today's target by":"מעל היעד היומי ב-","Ideas from Claude":"רעיונות מ-Claude","Why you need it":"למה הגוף צריך את זה","Foods rich in it":"מזונות עשירים בו","Biggest sources":"המקורות העיקריים","Per typical serving, from the food database.":"לפי מנה רגילה, מתוך מאגר המזון. האחוז הוא מתוך היעד היומי שלך.","Your data is private to your Claude account. Anyone else who opens this app sees only their own log.":"הנתונים שלך פרטיים לחשבון Claude שלך. כל מי שפותח את האפליקציה רואה רק את היומן שלו.","Sign in to claude.ai to keep your own private log.":"התחבר ל-claude.ai כדי לנהל יומן פרטי משלך.","Record what you ate":"הקלט מה אכלת","Record":"הקלטה","Stop":"עצירה","Find ingredients & log":"מצא מרכיבים ורשום","Finding ingredients…":"מחפש מרכיבים…",
   "Tap the 🎙 on your keyboard and say what you ate. When you finish, tap Send (or Return) on the keyboard and the meal is logged.":"לחץ על 🎙 במקלדת ואמור מה אכלת. כשתסיים, לחץ ״שליחה״ (או Enter) במקלדת והארוחה תירשם.",
   "Listening… tap Stop when you're done.":"מקשיב… לחץ ״עצירה״ כשסיימת.","Finishing…":"מסיים…","Undo":"ביטול רישום","Done":"סיום","Added to your food database:":"נוסף למאגר המזון:",
   "Hebrew voice input isn't offered here. Tap Record again to use your device language.":"הקלטה בעברית לא זמינה כאן. לחץ שוב ״הקלטה״ כדי להקליט בשפת המכשיר.",
@@ -613,7 +642,7 @@ const PATTERNS = [
   ["Use photo from {0} as After","השתמש בתמונה מ-{0} כ״אחרי״"],["{0} photo","תמונת {0}"],["Grams of {0}","גרמים של {0}",[0]],["Edit {0}","עריכת {0}",[0]],["Delete {0}","מחיקת {0}",[0]],["Remove {0}","הסרת {0}",[0]],
   ["Couldn't save ({0}). Your edits are still here.","השמירה נכשלה ({0}). השינויים עדיין כאן.",[0]],
   ["Eaten {0} of {1} kcal · {2} meals today","נאכלו {0} מתוך {1} קק״ל · {2} ארוחות היום"],["Eaten {0} of {1} kcal · {2} meal today","נאכלו {0} מתוך {1} קק״ל · ארוחה אחת היום"],
-  ["{0} {1}%","{0} {1}%"],["{0} g","{0} ג׳"],["{0} g left","נשארו {0} ג׳"],["{0} g over","{0} ג׳ מעל"],
+  ["{0} {1}%","{0} {1}%"],["{0} g","{0} ג׳"],["{0} g left","נשארו {0} ג׳"],["{0} of {1} g","אכלת {0} מתוך {1} ג׳"],["Today: {0} of {1} {2} max","היום: {0} מתוך {1} {2} מקס׳"],["Today: {0} of {1} {2}","היום: {0} מתוך {1} {2}"],["Today: {0} {1}","היום: {0} {1}"],["{0} g over","{0} ג׳ מעל"],
 ];
 const PAT_RE = PATTERNS.flatMap(([en,he,free])=>{ en=en.trim(); he=he.trim(); return ["(.+?)","(.+)"].map(g=>{ const parts=en.split(/\{(\d)\}/); let re="^", order=[]; parts.forEach((p,i)=>{ if(i%2) { re+=g; order.push(+p); } else re+=p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }); return [new RegExp(re+"$","s"),order,he,free||[]]; }); });
 const NUMISH=/^[\d.,+\-−~:%\s/]*$/;
@@ -924,7 +953,7 @@ function confirmDelete(btn,m){
 function renderMicro(T, tot, items){
   const box=$("micro"); box.replaceChildren();
   MICROS.forEach(([k,label,u])=>{
-    const c=el("div","mc"); const tv=T?T[k]:null; const known=has(items,k);
+    const c=el("button","mc"); c.type="button"; c.addEventListener("click",()=>openNutrient(k)); const tv=T?T[k]:null; const known=has(items,k);
     let cls="", pct=null;
     if(tv){ pct=tot[k]/tv*100; cls = LIMITS.has(k) ? (pct>100?"hi":"ok") : (pct>=50?"ok":"lo"); }
     if(!known) cls="";
@@ -1021,7 +1050,7 @@ function drawResults(){
   searchFoods($("dbQ").value).forEach(f=>{
     const b=el("button"); b.type="button"; b.setAttribute("role","option");
     const l=el("span",null,foodLabel(f)); if(f.custom) l.append(el("span","tag","added"));
-    b.append(l, el("small",null,`${f.serving} · ${fmt((f.per100.kcal||0)*f.servingG/100,0)} kcal`));
+    b.append(l, el("small",null,`${servingLabel(f.serving)} · ${fmt((f.per100.kcal||0)*f.servingG/100,0)} kcal`));
     b.addEventListener("click",()=>{ basket.push({f,grams:f.servingG,amount:f.serving}); $("dbQ").value=""; drawResults(); drawBasket(); $("dbQ").focus(); });
     box.append(b);
   });
@@ -1262,7 +1291,7 @@ function renderNext(H,T){
     }
   } else b.textContent="Add your profile below to get a calorie and protein budget for each meal.";
   const g=$("nmGaps"); g.replaceChildren();
-  if(P.gaps.length){ g.append(el("span",null,"Low today:")); g.firstChild.style.cssText="background:none;color:var(--muted);padding-left:0"; P.gaps.forEach(x=>g.append(el("span",null,`${x.l} ${fmt(x.pct*100,0)}%`))); }
+  if(P.gaps.length){ g.append(el("span",null,"Low today:")); g.firstChild.style.cssText="background:none;color:var(--muted);padding-left:0"; P.gaps.forEach(x=>{ const b=el("button","gapbtn",`${x.l} ${fmt(x.pct*100,0)}%`); b.type="button"; b.addEventListener("click",()=>openNutrient(x.k)); g.append(b); }); }
 }
 (async()=>{ let sm=null; try{ sm = window.claude && window.claude.use ? await window.claude.use("sample") : null; }catch(e){} if(!sm){ $("nmGo").disabled=true; $("nmHint").textContent="Meal ideas aren't available in this view. Ask Claude in chat: \"what should I eat next?\""; } else window.__sm=sm; maybeAutoSuggest(); })();
 async function runSuggest(){
@@ -1467,6 +1496,49 @@ $("phFile").addEventListener("change",async()=>{
   finally{ pick.firstChild.textContent="Add photo"; }
 });
 
+// ---------- nutrient info sheet ----------
+const WHY = {
+  fiber:{en:"Keeps digestion regular, keeps you full for longer, slows the rise in blood sugar after meals and helps lower LDL cholesterol.",he:"שומרים על עיכול תקין, מאריכים את תחושת השובע, מאטים את עליית הסוכר בדם אחרי ארוחה ועוזרים להוריד כולסטרול LDL."},
+  sugar:{en:"Sugar is quick energy, but added sugar beyond about 10% of calories adds empty calories, raises the risk of weight gain and harms teeth. Sugar in fruit and dairy comes with fiber and nutrients, so the foods to limit are sweets and sweet drinks.",he:"סוכר הוא אנרגיה מהירה, אבל סוכר מוסף מעבר לכ-10% מהקלוריות מוסיף קלוריות ריקות, מעלה את הסיכון לעלייה במשקל ופוגע בשיניים. סוכר מפירות ומוצרי חלב מגיע עם סיבים ורכיבים תזונתיים, ולכן כדאי להגביל בעיקר ממתקים ומשקאות ממותקים."},
+  sodium:{en:"Needed for fluid balance and nerve signals, but most people eat far more than they need. Above about 2,300 mg a day it raises blood pressure. Processed meats, cheese, bread and pickled foods are the biggest sources.",he:"נחוץ לאיזון נוזלים ולהעברת אותות עצביים, אבל רוב האנשים אוכלים הרבה יותר מהנדרש. מעל כ-2,300 מ״ג ביום הוא מעלה לחץ דם. נקניקים, גבינות, לחם ומזונות כבושים הם המקורות הגדולים."},
+  potassium:{en:"Balances the effect of sodium and helps keep blood pressure down. Needed for muscle contraction (including the heart) and for nerve signals.",he:"מאזן את השפעת הנתרן ועוזר לשמור על לחץ דם תקין. נחוץ לכיווץ שרירים (כולל הלב) ולהעברת אותות עצביים."},
+  calcium:{en:"Builds and maintains bones and teeth, and is needed for muscle contraction, nerve signals and blood clotting.",he:"בונה ושומר על עצמות ושיניים, ונחוץ לכיווץ שרירים, להעברת אותות עצביים ולקרישת דם."},
+  iron:{en:"Part of hemoglobin, which carries oxygen in the blood. Too little causes tiredness and weakness. Iron from plants is absorbed better when eaten with vitamin C.",he:"חלק מההמוגלובין שנושא חמצן בדם. מחסור גורם לעייפות וחולשה. ברזל ממקור צמחי נספג טוב יותר כשאוכלים אותו עם ויטמין C."},
+  magnesium:{en:"Takes part in more than 300 enzyme reactions: energy production, muscle and nerve function, blood sugar control and sleep quality.",he:"משתתף ביותר מ-300 תהליכים בגוף: הפקת אנרגיה, תפקוד שרירים ועצבים, איזון סוכר בדם ואיכות שינה."},
+  zinc:{en:"Supports the immune system, wound healing, protein building and the senses of taste and smell. Also involved in testosterone production.",he:"תומך במערכת החיסון, בריפוי פצעים, בבניית חלבונים ובחושי הטעם והריח. מעורב גם בייצור טסטוסטרון."},
+  vitA:{en:"Needed for vision (especially in dim light), a healthy immune system and healthy skin and mucous membranes.",he:"נחוץ לראייה (במיוחד באור חלש), למערכת חיסון תקינה ולבריאות העור והריריות."},
+  vitC:{en:"Supports the immune system, builds collagen for skin, blood vessels and joints, acts as an antioxidant and improves iron absorption from plant foods.",he:"תומך במערכת החיסון, בונה קולגן לעור, לכלי הדם ולמפרקים, פועל כנוגד חמצון ומשפר ספיגת ברזל ממזון צמחי."},
+  vitD:{en:"Helps the body absorb calcium for strong bones, and supports muscles and the immune system. The main source is sunlight on the skin; few foods contain much of it, so many people need a supplement (ask a doctor).",he:"עוזר לגוף לספוג סידן לעצמות חזקות, ותומך בשרירים ובמערכת החיסון. המקור העיקרי הוא חשיפה לשמש; מעט מזונות מכילים כמות משמעותית, ולכן הרבה אנשים צריכים תוסף (כדאי להתייעץ עם רופא)."},
+  vitE:{en:"An antioxidant that protects cell membranes from damage and supports the immune system.",he:"נוגד חמצון שמגן על קרומי התאים מנזק ותומך במערכת החיסון."},
+  vitK:{en:"Needed for normal blood clotting and for building bone. People on blood thinners such as warfarin should keep their intake steady.",he:"נחוץ לקרישת דם תקינה ולבניית עצם. מי שנוטל מדללי דם כמו וורפרין צריך לשמור על צריכה קבועה."},
+  b1:{en:"Turns carbohydrates into energy and keeps nerves and muscles working.",he:"הופך פחמימות לאנרגיה ושומר על תפקוד עצבים ושרירים."},
+  b2:{en:"Helps produce energy from food and keeps skin and eyes healthy.",he:"עוזר להפיק אנרגיה מהמזון ושומר על בריאות העור והעיניים."},
+  b3:{en:"Needed to produce energy from food, for DNA repair and for healthy skin and nerves.",he:"נחוץ להפקת אנרגיה מהמזון, לתיקון DNA ולבריאות העור והעצבים."},
+  b6:{en:"Helps the body use protein, make neurotransmitters such as serotonin, and form red blood cells.",he:"עוזר לגוף לנצל חלבון, לייצר מוליכים עצביים כמו סרוטונין וליצור כדוריות דם אדומות."},
+  b12:{en:"Needed for healthy nerves, red blood cells and DNA. Found almost only in animal foods, so vegetarians and vegans often need a supplement.",he:"נחוץ לעצבים תקינים, לכדוריות דם אדומות ול-DNA. נמצא כמעט רק במזון מן החי, ולכן צמחונים וטבעונים צריכים לרוב תוסף."},
+  folate:{en:"Needed for cell division, red blood cells and DNA. Especially important before and during pregnancy to prevent birth defects.",he:"נחוצה לחלוקת תאים, לכדוריות דם אדומות ול-DNA. חשובה במיוחד לפני ההריון ובמהלכו למניעת מומים."},
+};
+const SERV_HE={"1/2":"½","1/4":"¼","cup":"כוס","cups":"כוסות","cooked":"מבושל","plate":"צלחת","pita":"פיתה","medium":"בינוני","large":"גדול","small":"קטן","slice":"פרוסה","slices":"פרוסות","tbsp":"כף","tsp":"כפית","handful":"חופן","piece":"יחידה","pieces":"יחידות","roll":"לחמנייה","egg":"ביצה","eggs":"ביצים","fillet":"פילה","bar":"חטיף","can":"פחית","drained":"מסונן","bowl":"קערה","portion":"מנה","glass":"כוס","bottle":"בקבוק","scoop":"סקופ","breast":"חזה","thigh":"ירך","steak":"סטייק","patty":"קציצה","skewers":"שיפודים","sausage":"נקניקייה","bagel":"בייגל","wrap":"טורטייה","cob":"קלח","olives":"זיתים","dates":"תמרים","row":"שורה","squares":"קוביות","bag":"שקית","cookies":"עוגיות","scoop":"כדור","balls":"כדורים","avocado":"אבוקדו","pickle":"מלפפון","Israeli":"ישראלי","cucumber":"מלפפון","g":"ג׳","omelet":"חביתה","2-egg":"2 ביצים","pieces":"יחידות","row (20 g)":"שורה (20 ג׳)"};
+function servingLabel(t){ if(LANG!=="he"||!t) return t; return String(t).split(/(\s+|[()])/).map(w=>SERV_HE[w]||w).join(""); }
+function openNutrient(k){
+  const m=MICROS.find(x=>x[0]===k); if(!m) return; const [,label,u]=m; const limit=LIMITS.has(k)||k==="sugar";
+  const T=targets(state.profile); const today=iso(new Date());
+  const tot=sumItems(state.meals.filter(x=>x.date===(state.page==="nutrition"?state.date:today)).flatMap(x=>x.items||[]));
+  $("shTitle").textContent=label;
+  $("shToday").textContent = T&&T[k] ? `Today: ${fmt(tot[k])} of ${fmt(T[k])} ${u}${limit?" max":""}` : `Today: ${fmt(tot[k])} ${u}`;
+  $("shWhy").textContent = (WHY[k]||{})[LANG] || (WHY[k]||{}).en || "";
+  $("shFoodsTitle").textContent = limit ? "Biggest sources" : "Foods rich in it";
+  const list=$("shFoods"); list.replaceChildren();
+  FOODDB.all.map(f=>({f,amt:(Number(f.per100&&f.per100[k])||0)*f.servingG/100})).filter(x=>x.amt>0).sort((a,b)=>b.amt-a.amt).slice(0,10).forEach(({f,amt})=>{
+    const r=el("div","r"); const nm=el("span"); const n1=el("span",null,foodLabel(f)); n1.setAttribute("data-noi18n",""); nm.append(n1, el("small",null,servingLabel(f.serving)));
+    r.append(nm, el("span","amt",`${fmt(amt)} ${u}`), el("span","pc", T&&T[k]?`${fmt(amt/T[k]*100,0)}%`:"")); list.append(r); });
+  $("sheetBg").hidden=false; $("shClose").focus();
+}
+function closeSheet(){ $("sheetBg").hidden=true; }
+$("shClose").addEventListener("click",closeSheet);
+$("sheetBg").addEventListener("click",e=>{ if(e.target===$("sheetBg")) closeSheet(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("sheetBg").hidden) closeSheet(); });
+
 // ---------- home ----------
 function renderHome(T){
   const today=iso(new Date()); const tm=state.meals.filter(m=>m.date===today); const e=sumItems(tm.flatMap(m=>m.items||[]));
@@ -1481,7 +1553,7 @@ function renderHome(T){
   const bar=$("homeBar"); bar.firstElementChild.style.width=Math.min(100,e.kcal/T.kcal*100)+"%"; bar.classList.toggle("over",over);
   meta.textContent = `Eaten ${fmt(e.kcal,0)} of ${fmt(T.kcal,0)} kcal · ${tm.length} meal${tm.length===1?"":"s"} today`;
   [["Protein","protein","var(--protein)"],["Carbs","carbs","var(--carbs)"],["Fat","fat","var(--fat)"]].forEach(([l,k,c])=>{
-    const d=el("div"); const lft=T[k]-e[k]; d.append(el("span",null,l), el("b",null, lft>=0?`${fmt(lft,0)} g left`:`${fmt(-lft,0)} g over`));
+    const d=el("div"); const lft=T[k]-e[k]; d.append(el("span",null,l), el("b",null, `${fmt(e[k],0)} of ${fmt(T[k],0)} g`)); if(lft<0) d.lastChild.style.color="var(--over)";
     const m=el("div","m"); const i=el("i"); i.style.width=Math.min(100,e[k]/T[k]*100)+"%"; i.style.background=c; m.append(i); d.append(m); mac.append(d); });
 }
 function ideasKey(){ return [UID||"", iso(new Date()), lastPlan?lastPlan.next.name:"", lastPlan?lastPlan.todayMeals.length:0, LANG].join("|"); }
